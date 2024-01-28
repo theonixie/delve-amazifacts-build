@@ -8,17 +8,17 @@ class DamageIndicator extends HudEntity {
     velocity;
     /** How long this indicator has existed. Slowly fades and then disappears after a set amount of time. */
     lifeTimer;
-    constructor(game, x, y, damageAmount) {
-        super(game, x, y);
+    constructor(x, y, damageAmount) {
+        super(x, y);
         this.damageAmount = damageAmount;
         this.velocity = new Vector2(Math.random() * 24.0 - 12, -180);
         this.lifeTimer = 1;
     }
     update() {
-        this.velocity.y += 250 * this.game.clockTick;
-        this.x += this.velocity.x * this.game.clockTick;
-        this.y += this.velocity.y * this.game.clockTick;
-        this.lifeTimer -= this.game.clockTick;
+        this.velocity.y += 250 * gameEngine.clockTick;
+        this.x += this.velocity.x * gameEngine.clockTick;
+        this.y += this.velocity.y * gameEngine.clockTick;
+        this.lifeTimer -= gameEngine.clockTick;
         if (this.lifeTimer <= 0) {
             this.removeFromWorld = true;
         }
@@ -28,7 +28,7 @@ class DamageIndicator extends HudEntity {
         ctx.font = "bold 12px monospace";
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
-        ctx.fillText("-" + this.damageAmount, this.x - this.game.camera.x, this.y - this.game.camera.y);
+        ctx.fillText("-" + this.damageAmount, this.x - gameEngine.camera.x, this.y - gameEngine.camera.y);
         ctx.globalAlpha = 1;
     }
 }

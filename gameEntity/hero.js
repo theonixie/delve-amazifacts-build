@@ -87,6 +87,17 @@ class Hero extends Character {
     get reflex() {
         return this.baseReflex + this.reflexMod;
     }
+    #mineSpeedMod = 0;
+    /** A speed modifier for how fast the player mines.
+    For example: A mineSpeedMod of 1 results in mining at double speed. */
+    get mineSpeedMod() {
+        return this.#mineSpeedMod;
+    }
+    set mineSpeedMod(value) {
+        this.#mineSpeedMod = value;
+        this.mineAnim.frameDuration = 0.05 / (1 + this.#mineSpeedMod);
+        this.mineAnim.totalTime = this.mineAnim.frameDuration * this.mineAnim.frameCount;
+    }
     heldWeapon;
     heldStemkit;
     heldSkills;
@@ -99,8 +110,8 @@ class Hero extends Character {
     // How much the player has of each resource.
     // index 0 is unused since it corresponds to nothing in StoneBlock, the rest correspond to resources.
     heldResources;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         this.collisionSize = 8;
         this.animFrame = 0;
         this.animTimer = 0;
@@ -155,7 +166,7 @@ class Hero extends Character {
         // Reduce cooldowns on any skills that have cooldowns.
         for (let i = 0; i < 4; i++) {
             if (this.heldSkills[i] !== null && this.heldSkills[i].cooldownTimer > 0) {
-                this.heldSkills[i].cooldownTimer -= this.game.clockTick;
+                this.heldSkills[i].cooldownTimer -= gameEngine.clockTick;
             }
         }
         switch (this.state) {
@@ -166,7 +177,7 @@ class Hero extends Character {
                     this.dodge();
                 }
                 else if (Input.mousedown || Input.rightClick) {
-                    let mouseClick = this.game.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
+                    let mouseClick = gameEngine.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
                     this.faceMouseDirection();
                     if (Input.mousedown) { // Attack!
                         this.attack();
@@ -194,7 +205,7 @@ class Hero extends Character {
                 if (this.attackSwingAnim.isDone()) {
                     this.state = PlayerState.Normal;
                     if (Input.mousedown || Input.rightClick) {
-                        let mouseClick = this.game.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
+                        let mouseClick = gameEngine.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
                         this.faceMouseDirection();
                         if (Input.mousedown) { // Attack!
                             this.attack();
@@ -216,8 +227,8 @@ class Hero extends Character {
             case PlayerState.Mining:
                 if (this.mineAnim.currentFrame() >= 4 && this.mineAnim.currentFrame() <= 6) {
                     let mineDirection = new Vector2(this.facingNormal.x, this.facingNormal.y * 0.5).normalized();
-                    this.game.globalEntities.get("cave").mineTile(mineDirection.scale(32).add(new Vector2(this.x, this.y)));
-                    //this.game.globalEntities.get("cave").mineTile(this.game.getMousePosition());
+                    gameEngine.globalEntities.get("cave").mineTile(mineDirection.scale(32).add(new Vector2(this.x, this.y)));
+                    //gameEngine.globalEntities.get("cave").mineTile(gameEngine.getMousePosition());
                 }
                 else {
                     this.processMoveInput();
@@ -225,7 +236,7 @@ class Hero extends Character {
                 if (this.mineAnim.isDone()) {
                     this.state = PlayerState.Normal;
                     if (Input.mousedown || Input.rightClick) {
-                        let mouseClick = this.game.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
+                        let mouseClick = gameEngine.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
                         this.faceMouseDirection();
                         if (Input.mousedown) { // Attack!
                             this.attack();
@@ -250,8 +261,8 @@ class Hero extends Character {
             }
         }
         this.checkCollision();
-        this.x += this.velocity.x * this.game.clockTick;
-        this.y += this.velocity.y * this.game.clockTick;
+        this.x += this.velocity.x * gameEngine.clockTick;
+        this.y += this.velocity.y * gameEngine.clockTick;
     }
     ;
     /**
@@ -274,10 +285,10 @@ class Hero extends Character {
         move = move.normalized();
         this.velocity = move.scale(this.moveSpeed * (this.dodgeAnim.currentFrame() < 10 ? 1.5 : 1.0));
         // // UNUSED. Allows for movement by clicking with the mouse. Might be buggy if re-enabled due to camera displacement.
-        // if(Input.mousedown === true && Math.sqrt(Math.pow(this.game.mouse.x - 32 - this.x, 2) + Math.pow(this.game.mouse.y - 64 - this.y, 2)) > 5) {
-        //     let magnitude = Math.sqrt(Math.pow(this.game.mouse.x - 32 - this.x, 2) + Math.pow(this.game.mouse.y - 64 - this.y, 2));
-        //     this.velocity.x = this.moveSpeed * (this.game.mouse.x - 32 - this.x) / magnitude;
-        //     this.velocity.y = this.moveSpeed * (this.game.mouse.y - 64 - this.y) / magnitude;
+        // if(Input.mousedown === true && Math.sqrt(Math.pow(gameEngine.mouse.x - 32 - this.x, 2) + Math.pow(gameEngine.mouse.y - 64 - this.y, 2)) > 5) {
+        //     let magnitude = Math.sqrt(Math.pow(gameEngine.mouse.x - 32 - this.x, 2) + Math.pow(gameEngine.mouse.y - 64 - this.y, 2));
+        //     this.velocity.x = this.moveSpeed * (gameEngine.mouse.x - 32 - this.x) / magnitude;
+        //     this.velocity.y = this.moveSpeed * (gameEngine.mouse.y - 64 - this.y) / magnitude;
         // }
     }
     /** Updates the player's facingDirection to point towards where their velocity is facing. */
@@ -289,7 +300,7 @@ class Hero extends Character {
     }
     /** Updates the player's facingDirection to point towards the mouse. */
     faceMouseDirection() {
-        let mouseClick = this.game.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
+        let mouseClick = gameEngine.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
         this.facingNormal = mouseClick;
         let angleRad = Math.atan2(-mouseClick.x, mouseClick.y);
         this.facingDirection = Math.round(((360 + (180 * angleRad / Math.PI)) % 360) / 22.5) % 16;
@@ -300,25 +311,25 @@ class Hero extends Character {
         this.dodgeAnim.elapsedTime = 0;
     }
     attack() {
-        let mouseClick = this.game.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
+        let mouseClick = gameEngine.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
         this.state = PlayerState.Attacking;
         this.attackSwingAnim.elapsedTime = 0;
         // Only attack if we are holding a weapon.
         // TODO: Add attack for if the player is holding no weapon.
         if (this.heldWeapon !== null) {
-            let projectile = new Projectile(this.game, this.x + (mouseClick.x * 16), this.y + (mouseClick.y * 16), this, 0.05, Math.floor(this.power * 0.5) + Math.floor((Math.random() * (this.heldWeapon.damageMax - this.heldWeapon.damageMin + 1)) + this.heldWeapon.damageMin));
+            let projectile = new Projectile(this.x + (mouseClick.x * 16), this.y + (mouseClick.y * 16), this, 0.05, Math.floor(this.power * 0.5) + Math.floor((Math.random() * (this.heldWeapon.damageMax - this.heldWeapon.damageMin + 1)) + this.heldWeapon.damageMin));
             projectile.onEnemyCollision = (enemy) => {
                 projectile.owner.gainEnergy(2);
                 for (let i = 0; i < this.onEnemyHurt.length; i++) {
                     this.onEnemyHurt[i](this, enemy, projectile);
                 }
             };
-            this.game.addEntity(projectile);
+            gameEngine.addEntity(projectile);
         }
     }
     castSkill(skillIndex) {
         if (this.heldSkills[skillIndex] !== null) {
-            this.heldSkills[skillIndex].cast(this.game, this);
+            this.heldSkills[skillIndex].cast(this);
         }
     }
     gainExperience(amount) {
@@ -356,37 +367,37 @@ class Hero extends Character {
         projectile.attackedEntities.push(this);
         let damageTaken = projectile.damage;
         this.health -= damageTaken;
-        this.game.addEntity(new DamageIndicator(this.game, this.x, this.y, damageTaken));
+        gameEngine.addEntity(new DamageIndicator(this.x, this.y, damageTaken));
         if (this.health <= 0) // Death
          {
             for (let i = 0; i < 5; i++) {
                 let goreVelocity = new Vector2((Math.random() * 200) - 100, (Math.random() * 200) - 100);
-                this.game.addEntity(new Gore(this.game, this.x, this.y, goreVelocity));
+                gameEngine.addEntity(new Gore(this.x, this.y, goreVelocity));
             }
             // // This is for testing item drops.
-            // this.game.addEntity(new DroppedItem(this.game, this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
-            // this.game.addEntity(new DroppedItem(this.game, this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
-            // this.game.addEntity(new DroppedItem(this.game, this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
-            // this.game.addEntity(new DroppedItem(this.game, this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
-            this.game.addEntity(new DroppedItem(this.game, this.x, this.y, ItemGenerator.generateWeapon()));
+            // gameEngine.addEntity(new DroppedItem(this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
+            // gameEngine.addEntity(new DroppedItem(this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
+            // gameEngine.addEntity(new DroppedItem(this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
+            // gameEngine.addEntity(new DroppedItem(this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
+            gameEngine.addEntity(new DroppedItem(this.x, this.y, ItemGenerator.generateWeapon()));
             this.removeFromWorld = true;
         }
         this.velocity = new Vector2(this.x - projectile.x, this.y - projectile.y).normalized().scale(256);
     }
     draw(ctx) {
-        ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - this.game.camera.x - 16, this.y - this.game.camera.y - 8, 32, 16);
+        ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
         //ctx.drawImage(this.spritesheet, this.animFrame * 64, this.facingDirection * 64, 64, 64, this.x, this.y, 64, 64);
         if (!this.attackSwingAnim.isDone()) {
-            this.attackSwingAnim.drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x - 24, this.y - this.game.camera.y - 40, 1, this.facingDirection);
+            this.attackSwingAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 24, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         else if (!this.dodgeAnim.isDone()) {
-            this.dodgeAnim.drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x - 32, this.y - this.game.camera.y - 40, 1, this.facingDirection);
+            this.dodgeAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         else if (!this.mineAnim.isDone()) {
-            this.mineAnim.drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x - 32, this.y - this.game.camera.y - 40, 1, this.facingDirection);
+            this.mineAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         else if (this.velocity.x != 0 || this.velocity.y != 0) {
-            this.runAnim.drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x - 32, this.y - this.game.camera.y - 40, 1, this.facingDirection);
+            this.runAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
             if (this.runAnim.currentFrame() >= 7 && this.footstepSfxCounter == 0) {
                 ASSET_MANAGER.playAsset(this.footstepSfx[Math.floor(Math.random() * this.footstepSfx.length)]);
                 this.footstepSfxCounter = 1;
@@ -400,16 +411,16 @@ class Hero extends Character {
             }
         }
         else {
-            this.standAnim.drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x - 32, this.y - this.game.camera.y - 40, 1, this.facingDirection);
+            this.standAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         if (params.drawColliders) {
             ctx.lineWidth = 4;
             ctx.strokeStyle = "green";
             ctx.beginPath();
-            ctx.moveTo(this.x - this.game.camera.x - this.collisionSize * 2, this.y - this.game.camera.y);
-            ctx.lineTo(this.x - this.game.camera.x, this.y - this.game.camera.y - (this.collisionSize));
-            ctx.lineTo(this.x - this.game.camera.x + this.collisionSize * 2, this.y - this.game.camera.y);
-            ctx.lineTo(this.x - this.game.camera.x, this.y - this.game.camera.y + (this.collisionSize));
+            ctx.moveTo(this.x - gameEngine.camera.x - this.collisionSize * 2, this.y - gameEngine.camera.y);
+            ctx.lineTo(this.x - gameEngine.camera.x, this.y - gameEngine.camera.y - (this.collisionSize));
+            ctx.lineTo(this.x - gameEngine.camera.x + this.collisionSize * 2, this.y - gameEngine.camera.y);
+            ctx.lineTo(this.x - gameEngine.camera.x, this.y - gameEngine.camera.y + (this.collisionSize));
             ctx.closePath();
             ctx.stroke();
         }

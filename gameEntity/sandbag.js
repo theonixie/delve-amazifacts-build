@@ -4,8 +4,8 @@ class Sandbag extends Enemy {
     standAnim;
     runAnim;
     shadowSprite;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         this.collisionSize = 8;
         this.health = 15;
         this.removeFromWorld = false;
@@ -20,10 +20,10 @@ class Sandbag extends Enemy {
     }
     ;
     update() {
-        // if(this.game.mousedown === true && Math.sqrt(Math.pow(this.game.mouse.x - 32 - this.x, 2) + Math.pow(this.game.mouse.y - 64 - this.y, 2)) > 5) {
-        //     let magnitude = Math.sqrt(Math.pow(this.game.mouse.x - 32 - this.x, 2) + Math.pow(this.game.mouse.y - 64 - this.y, 2));
-        //     this.velocity.x = this.moveSpeed * (this.game.mouse.x - 32 - this.x) / magnitude;
-        //     this.velocity.y = this.moveSpeed * (this.game.mouse.y - 64 - this.y) / magnitude;
+        // if(gameEngine.mousedown === true && Math.sqrt(Math.pow(gameEngine.mouse.x - 32 - this.x, 2) + Math.pow(gameEngine.mouse.y - 64 - this.y, 2)) > 5) {
+        //     let magnitude = Math.sqrt(Math.pow(gameEngine.mouse.x - 32 - this.x, 2) + Math.pow(gameEngine.mouse.y - 64 - this.y, 2));
+        //     this.velocity.x = this.moveSpeed * (gameEngine.mouse.x - 32 - this.x) / magnitude;
+        //     this.velocity.y = this.moveSpeed * (gameEngine.mouse.y - 64 - this.y) / magnitude;
         // }
         // If we are moving, update the facing direction.
         if (this.velocity.x !== 0 || this.velocity.y !== 0) {
@@ -31,24 +31,24 @@ class Sandbag extends Enemy {
             this.facingDirection = Math.round(((360 + (180 * angleRad / Math.PI)) % 360) / 22.5) % 16;
             //console.log(this.facingDirection);
         }
-        this.x += this.velocity.x * this.game.clockTick;
-        this.y += this.velocity.y * this.game.clockTick;
+        this.x += this.velocity.x * gameEngine.clockTick;
+        this.y += this.velocity.y * gameEngine.clockTick;
         this.velocity = this.velocity.scale(0.5);
         this.checkCollision();
     }
     ;
     draw(ctx) {
-        ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - this.game.camera.x - 16, this.y - this.game.camera.y - 8, 32, 16);
+        ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
         //ctx.drawImage(this.spritesheet, this.animFrame * 64, this.facingDirection * 64, 64, 64, this.x, this.y, 64, 64);
-        this.standAnim.drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x - 24, this.y - this.game.camera.y - 40, 1, this.facingDirection);
+        this.standAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 24, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         if (params.drawColliders) {
             ctx.lineWidth = 4;
             ctx.strokeStyle = "green";
             ctx.beginPath();
-            ctx.moveTo(this.x - this.game.camera.x - this.collisionSize * 2, this.y - this.game.camera.y);
-            ctx.lineTo(this.x - this.game.camera.x, this.y - this.game.camera.y - (this.collisionSize));
-            ctx.lineTo(this.x - this.game.camera.x + this.collisionSize * 2, this.y - this.game.camera.y);
-            ctx.lineTo(this.x - this.game.camera.x, this.y - this.game.camera.y + (this.collisionSize));
+            ctx.moveTo(this.x - gameEngine.camera.x - this.collisionSize * 2, this.y - gameEngine.camera.y);
+            ctx.lineTo(this.x - gameEngine.camera.x, this.y - gameEngine.camera.y - (this.collisionSize));
+            ctx.lineTo(this.x - gameEngine.camera.x + this.collisionSize * 2, this.y - gameEngine.camera.y);
+            ctx.lineTo(this.x - gameEngine.camera.x, this.y - gameEngine.camera.y + (this.collisionSize));
             ctx.closePath();
             ctx.stroke();
         }

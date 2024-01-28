@@ -5,18 +5,18 @@ class RecycleMenu extends HudEntity {
     slot2;
     result;
     backgroundSprite;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         this.backgroundSprite = ASSET_MANAGER.getAsset("./sprites/ui/menu_recycle.png");
         this.slot1 = null;
         this.slot2 = null;
         this.result = null;
-        this.selectedItem = game.globalEntities.get("selectedItem");
+        this.selectedItem = gameEngine.globalEntities.get("selectedItem");
     }
     update() {
         if ((Input.frameKeys["KeyC"] || Input.frameKeys["KeyI"]) && this.menuVisible) {
             this.menuVisible = false;
-            this.game.globalEntities.get("inventoryMenu").menuVisible = false;
+            gameEngine.globalEntities.get("inventoryMenu").menuVisible = false;
         }
         if (this.menuVisible) {
             if (Input.mouse.x < 300) {
@@ -72,19 +72,19 @@ class RecycleMenu extends HudEntity {
             if (this.slot1 !== null) {
                 ctx.drawImage(this.slot1.sprite, 32, 32);
                 if (this.hoveringSlot1()) {
-                    this.game.tooltipArray = this.slot1.getTooltip();
+                    gameEngine.tooltipArray = this.slot1.getTooltip();
                 }
             }
             if (this.slot2 !== null) {
                 ctx.drawImage(this.slot2.sprite, 32, 128);
                 if (this.hoveringSlot2()) {
-                    this.game.tooltipArray = this.slot2.getTooltip();
+                    gameEngine.tooltipArray = this.slot2.getTooltip();
                 }
             }
             if (this.result !== null) {
                 ctx.drawImage(this.result.sprite, 32, 224);
                 if (this.hoveringResult()) {
-                    this.game.tooltipArray = this.result.getTooltip();
+                    gameEngine.tooltipArray = this.result.getTooltip();
                 }
             }
         }

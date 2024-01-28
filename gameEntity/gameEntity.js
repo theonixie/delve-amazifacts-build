@@ -1,5 +1,4 @@
 class GameEntity {
-    game;
     x;
     y;
     /**
@@ -8,11 +7,10 @@ class GameEntity {
     * constructor if needed.
     */
     inCave;
-    constructor(game, x, y) {
-        this.game = game;
+    constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.inCave = game.inCave;
+        this.inCave = gameEngine.inCave;
     }
 }
 //# sourceMappingURL=gameEntity.js.map

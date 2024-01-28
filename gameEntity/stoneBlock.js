@@ -5,11 +5,16 @@ class StoneBlock extends GameEntity {
     resource;
     collisionSize;
     spritesheet;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         this.renderLayer = 2;
         this.collisionSize = 16;
-        this.spritesheet = ASSET_MANAGER.getAsset("./sprites/tile/wall_cave.png");
+        if (gameEngine.currentFloor < 4)
+            this.spritesheet = ASSET_MANAGER.getAsset("./sprites/tile/cave_wall.png");
+        else if (gameEngine.currentFloor < 7)
+            this.spritesheet = ASSET_MANAGER.getAsset("./sprites/tile/factory_wall.png");
+        else
+            this.spritesheet = ASSET_MANAGER.getAsset("./sprites/tile/castle_wall.png");
         // Pick a random resource for this block.
         // For testing purposes, this is chosen at random.
         // Each floor should have unique resource distributions.
@@ -24,21 +29,21 @@ class StoneBlock extends GameEntity {
     update() {
     }
     draw(ctx) {
-        let player = this.game.globalEntities.get("hero");
+        let player = gameEngine.globalEntities.get("hero");
         if (this.x - 32 < player.x && this.x + 32 > player.x && this.y - 32 < player.y && this.y > player.y) {
             ctx.globalAlpha = 0.7;
         }
         // The sprite drawn depends on the resource.
-        ctx.drawImage(this.spritesheet, (this.resource % 4) * 96, Math.floor(this.resource / 4) * 96, 96, 96, this.x - this.game.camera.x - 48, this.y - this.game.camera.y - 72, 96, 96);
+        ctx.drawImage(this.spritesheet, (this.resource % 4) * 96, Math.floor(this.resource / 4) * 96, 96, 96, this.x - gameEngine.camera.x - 48, this.y - gameEngine.camera.y - 72, 96, 96);
         ctx.globalAlpha = 1;
         if (params.drawColliders) {
             ctx.lineWidth = 4;
             ctx.strokeStyle = "green";
             ctx.beginPath();
-            ctx.moveTo(this.x - this.game.camera.x - this.collisionSize * 2, this.y - this.game.camera.y);
-            ctx.lineTo(this.x - this.game.camera.x, this.y - this.game.camera.y - (this.collisionSize));
-            ctx.lineTo(this.x - this.game.camera.x + this.collisionSize * 2, this.y - this.game.camera.y);
-            ctx.lineTo(this.x - this.game.camera.x, this.y - this.game.camera.y + (this.collisionSize));
+            ctx.moveTo(this.x - gameEngine.camera.x - this.collisionSize * 2, this.y - gameEngine.camera.y);
+            ctx.lineTo(this.x - gameEngine.camera.x, this.y - gameEngine.camera.y - (this.collisionSize));
+            ctx.lineTo(this.x - gameEngine.camera.x + this.collisionSize * 2, this.y - gameEngine.camera.y);
+            ctx.lineTo(this.x - gameEngine.camera.x, this.y - gameEngine.camera.y + (this.collisionSize));
             ctx.closePath();
             ctx.stroke();
         }

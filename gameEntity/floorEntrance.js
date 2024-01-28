@@ -1,16 +1,16 @@
 class FloorEntrance extends GameEntity {
     sprite;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         this.sprite = ASSET_MANAGER.getAsset("./sprites/tile/floor_entrance.png");
     }
     update() {
-        let mousePos = this.game.getMousePosition();
+        let mousePos = gameEngine.getMousePosition();
         if (mousePos.x > this.x - 16 && mousePos.x < this.x + 16 && mousePos.y > this.y - 16 && mousePos.y < this.y + 16 && Input.frameKeys["KeyE"]) {
             if (this.withinPlayerRange()) {
                 // Go to outpost.
-                this.game.inCave = false;
-                let player = this.game.globalEntities.get("hero");
+                gameEngine.inCave = false;
+                let player = gameEngine.globalEntities.get("hero");
                 player.inCave = false;
                 player.x = -860;
                 player.y = 0;
@@ -18,11 +18,11 @@ class FloorEntrance extends GameEntity {
         }
     }
     draw(ctx) {
-        ctx.drawImage(this.sprite, this.x - this.game.camera.x - 96, this.y - this.game.camera.y - 48);
-        let mousePos = this.game.getMousePosition();
+        ctx.drawImage(this.sprite, this.x - gameEngine.camera.x - 96, this.y - gameEngine.camera.y - 48);
+        let mousePos = gameEngine.getMousePosition();
         if (mousePos.x > this.x - 16 && mousePos.x < this.x + 16 && mousePos.y > this.y - 16 && mousePos.y < this.y + 16) {
             if (this.withinPlayerRange()) {
-                this.game.tooltipArray = [{
+                gameEngine.tooltipArray = [{
                         text: "Floor Entrace",
                         fontSize: 12
                     },
@@ -32,7 +32,7 @@ class FloorEntrance extends GameEntity {
                     }];
             }
             else {
-                this.game.tooltipArray = [{
+                gameEngine.tooltipArray = [{
                         text: "Floor Entrance",
                         fontSize: 12
                     }];
@@ -40,7 +40,7 @@ class FloorEntrance extends GameEntity {
         }
     }
     withinPlayerRange() {
-        let player = this.game.globalEntities.get("hero");
+        let player = gameEngine.globalEntities.get("hero");
         return Math.abs(this.x - player.x) < 128 && Math.abs(this.y - player.y) < 64;
     }
 }

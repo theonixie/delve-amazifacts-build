@@ -7,9 +7,9 @@ class DroppedItem extends GameEntity {
     spritesheet;
     shadowSprite;
     removeFromWorld;
-    constructor(game, x, y, associatedItem) {
-        super(game, x, y);
-        this.inCave = game.inCave;
+    constructor(x, y, associatedItem) {
+        super(x, y);
+        this.inCave = gameEngine.inCave;
         this.associatedItem = associatedItem;
         this.height = 1;
         this.bounceVelocity = Math.random() * 128 + 512;
@@ -27,19 +27,19 @@ class DroppedItem extends GameEntity {
         }
         else { // Object is still in the air and should move.
             var that = this;
-            this.game.entities.forEach(function (entity) {
+            gameEngine.entities.forEach(function (entity) {
                 if (entity !== that && entity.collisionSize !== 0)
                     that.collide(entity);
             });
-            this.bounceVelocity -= 2500 * this.game.clockTick;
-            this.height += this.bounceVelocity * this.game.clockTick;
+            this.bounceVelocity -= 2500 * gameEngine.clockTick;
+            this.height += this.bounceVelocity * gameEngine.clockTick;
         }
-        this.x += this.velocity.x * this.game.clockTick;
-        this.y += this.velocity.y * this.game.clockTick;
-        let mousePos = this.game.getMousePosition();
+        this.x += this.velocity.x * gameEngine.clockTick;
+        this.y += this.velocity.y * gameEngine.clockTick;
+        let mousePos = gameEngine.getMousePosition();
         if (mousePos.x > this.x - 8 && mousePos.x < this.x + 8 && mousePos.y > this.y - 12 && mousePos.y < this.y + 4 && Input.frameKeys["KeyE"]) {
             if (this.withinPlayerRange()) {
-                let inventory = this.game.globalEntities.get("inventoryMenu");
+                let inventory = gameEngine.globalEntities.get("inventoryMenu");
                 // Delete this pickup off the ground if it was successfully added to the inventory.
                 if (inventory.addItem(this.associatedItem)) {
                     this.removeFromWorld = true;
@@ -52,18 +52,18 @@ class DroppedItem extends GameEntity {
         }
     }
     draw(ctx) {
-        ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - this.game.camera.x - 16, this.y - this.game.camera.y - 8, 32, 16);
-        this.spritesheet.drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x - 16, this.y - this.game.camera.y - 56 - this.height, 1);
-        let mousePos = this.game.getMousePosition();
+        ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
+        this.spritesheet.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 56 - this.height, 1);
+        let mousePos = gameEngine.getMousePosition();
         if (mousePos.x > this.x - 8 && mousePos.x < this.x + 8 && mousePos.y > this.y - 12 && mousePos.y < this.y + 4) {
             if (this.withinPlayerRange()) {
-                this.game.tooltipArray = this.associatedItem.getTooltip().splice(0, 1).concat([{
+                gameEngine.tooltipArray = this.associatedItem.getTooltip().splice(0, 1).concat([{
                         text: "Press [E] to pick up.",
                         fontSize: 12
                     }]);
             }
             else {
-                this.game.tooltipArray = this.associatedItem.getTooltip().splice(0, 1);
+                gameEngine.tooltipArray = this.associatedItem.getTooltip().splice(0, 1);
             }
         }
     }
@@ -108,7 +108,7 @@ class DroppedItem extends GameEntity {
         }
     }
     withinPlayerRange() {
-        let player = this.game.globalEntities.get("hero");
+        let player = gameEngine.globalEntities.get("hero");
         return Math.abs(this.x - player.x) < 64 && Math.abs(this.y - player.y) < 32;
     }
 }

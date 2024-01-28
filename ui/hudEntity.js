@@ -1,11 +1,9 @@
 class HudEntity {
-    game;
     x;
     y;
     removeFromWorld;
     tooltipArray;
-    constructor(game, x, y) {
-        this.game = game;
+    constructor(x, y) {
         this.x = x;
         this.y = y;
         this.removeFromWorld = false;

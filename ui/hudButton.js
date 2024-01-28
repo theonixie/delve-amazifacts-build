@@ -4,8 +4,8 @@ class HudButton extends HudEntity {
     onClicked;
     activeSprite;
     disabledSprite;
-    constructor(game, x, y, width, height) {
-        super(game, x, y);
+    constructor(x, y, width, height) {
+        super(x, y);
         this.width = width;
         this.height = height;
         this.activeSprite = ASSET_MANAGER.getAsset("./sprites/ui/button_increase.png");
@@ -28,7 +28,7 @@ class HudButton extends HudEntity {
         if (Input.mouse.x > this.x && Input.mouse.x < this.x + this.width && Input.mouse.y > this.y && Input.mouse.y < this.y + this.height) {
             console.log("Button tooltip");
             if (this.tooltipArray !== null)
-                this.game.tooltipArray = this.tooltipArray;
+                gameEngine.tooltipArray = this.tooltipArray;
         }
     }
 }

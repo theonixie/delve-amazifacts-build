@@ -11,13 +11,13 @@ class InventoryMenu extends HudEntity {
     selectedItem;
     player;
     inventoryItems;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         // // The inventory is loaded before the player. If we do this in the constructor, it will crash.
-        //this.player = this.game.globalEntities.get("hero");
+        //this.player = gameEngine.globalEntities.get("hero");
         this.menuVisible = false;
         this.backgroundSprite = ASSET_MANAGER.getAsset("./sprites/ui/menu_inventory.png");
-        this.selectedItem = game.globalEntities.get("selectedItem");
+        this.selectedItem = gameEngine.globalEntities.get("selectedItem");
         this.inventoryItems = [];
     }
     update() {
@@ -103,7 +103,7 @@ class InventoryMenu extends HudEntity {
                                 if (previousWeapon !== null) {
                                     // If we can't add the item back to our inventory, drop it.
                                     if (!this.addItem(previousWeapon)) {
-                                        this.game.addEntity(new DroppedItem(this.game, this.player.x, this.player.y, previousWeapon));
+                                        gameEngine.addEntity(new DroppedItem(this.player.x, this.player.y, previousWeapon));
                                     }
                                 }
                             }
@@ -128,8 +128,8 @@ class InventoryMenu extends HudEntity {
             else { // Mouse is not hovering right side of screen.
                 if (Input.leftClick) {
                     // If we are holding an item and the recycle menu isn't open, drop it.
-                    if (this.selectedItem.item !== null && !this.game.globalEntities.get("recycleMenu").menuVisible) {
-                        this.game.addEntity(new DroppedItem(this.game, this.player.x, this.player.y, this.selectedItem.item));
+                    if (this.selectedItem.item !== null && !gameEngine.globalEntities.get("recycleMenu").menuVisible) {
+                        gameEngine.addEntity(new DroppedItem(this.player.x, this.player.y, this.selectedItem.item));
                         this.selectedItem.item = null;
                     }
                 }
@@ -156,7 +156,7 @@ class InventoryMenu extends HudEntity {
                 }
                 if (this.hoveringEquippedSkill() !== -1) {
                     if (this.player.heldSkills[this.hoveringEquippedSkill()] !== null)
-                        this.game.tooltipArray = (this.player.heldSkills[this.hoveringEquippedSkill()].getTooltip());
+                        gameEngine.tooltipArray = (this.player.heldSkills[this.hoveringEquippedSkill()].getTooltip());
                 }
             }
             this.inventoryItems.forEach((element) => {
@@ -164,13 +164,13 @@ class InventoryMenu extends HudEntity {
             });
             let hoveredItem = this.getHoveredInventoryItem();
             if (hoveredItem !== null) {
-                this.game.tooltipArray = (hoveredItem.associatedItem.getTooltip());
+                gameEngine.tooltipArray = (hoveredItem.associatedItem.getTooltip());
             }
             if (this.player.heldWeapon !== null && this.hoveringEquippedWeapon()) {
-                this.game.tooltipArray = (this.player.heldWeapon.getTooltip());
+                gameEngine.tooltipArray = (this.player.heldWeapon.getTooltip());
             }
             else if (this.player.heldStemkit !== null && this.hoveringEquippedStemkit()) {
-                this.game.tooltipArray = (this.player.heldStemkit.getTooltip());
+                gameEngine.tooltipArray = (this.player.heldStemkit.getTooltip());
             }
         }
     }

@@ -8,8 +8,8 @@ class Zombie extends Enemy {
     attackSwingAnim;
     shadowSprite;
     target;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         this.collisionSize = 8;
         this.health = 15;
         this.removeFromWorld = false;
@@ -17,7 +17,7 @@ class Zombie extends Enemy {
         this.velocity = new Vector2(0, 0);
         this.facingDirection = 0;
         this.moveSpeed = 60;
-        this.target = game.globalEntities.get("hero");
+        this.target = gameEngine.globalEntities.get("hero");
         //this.standSheet = ASSET_MANAGER.getAsset("./sprites/testCharacter.png");
         this.runAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/zombie/walk.png"), 64, 64, 12, 0.08, false, true);
         this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/zombie/attack.png"), 64, 64, 8, 0.05, false, false);
@@ -42,14 +42,14 @@ class Zombie extends Enemy {
                 this.velocity.x = 0;
                 this.velocity.y = 0;
                 if (this.attackSwingAnim.isDone()) {
-                    this.attackTimer += this.game.clockTick;
+                    this.attackTimer += gameEngine.clockTick;
                 }
                 if (this.attackTimer > this.attackDelay) { // If the timer maxes out, reset it and attack.
                     this.attackTimer = 0;
                     this.attackSwingAnim.elapsedTime = 0;
                     let attackDirection = targetDirection.normalized();
-                    let projectile = new Projectile(this.game, this.x + (attackDirection.x * 16), this.y + (attackDirection.y * 16), this, 0.05, 2);
-                    this.game.addEntity(projectile);
+                    let projectile = new Projectile(this.x + (attackDirection.x * 16), this.y + (attackDirection.y * 16), this, 0.05, 2);
+                    gameEngine.addEntity(projectile);
                 }
             }
         }
@@ -58,26 +58,26 @@ class Zombie extends Enemy {
             this.velocity.y = 0;
         }
         this.checkCollision();
-        this.x += this.velocity.x * this.game.clockTick;
-        this.y += this.velocity.y * this.game.clockTick;
+        this.x += this.velocity.x * gameEngine.clockTick;
+        this.y += this.velocity.y * gameEngine.clockTick;
     }
     ;
     draw(ctx) {
-        ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - this.game.camera.x - 16, this.y - this.game.camera.y - 8, 32, 16);
+        ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
         if (!this.attackSwingAnim.isDone()) {
-            this.attackSwingAnim.drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x - 24, this.y - this.game.camera.y - 40, 1, this.facingDirection);
+            this.attackSwingAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 24, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         else {
-            this.runAnim.drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x - 32, this.y - this.game.camera.y - 40, 1, this.facingDirection);
+            this.runAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         if (params.drawColliders) {
             ctx.lineWidth = 4;
             ctx.strokeStyle = "green";
             ctx.beginPath();
-            ctx.moveTo(this.x - this.game.camera.x - this.collisionSize * 2, this.y - this.game.camera.y);
-            ctx.lineTo(this.x - this.game.camera.x, this.y - this.game.camera.y - (this.collisionSize));
-            ctx.lineTo(this.x - this.game.camera.x + this.collisionSize * 2, this.y - this.game.camera.y);
-            ctx.lineTo(this.x - this.game.camera.x, this.y - this.game.camera.y + (this.collisionSize));
+            ctx.moveTo(this.x - gameEngine.camera.x - this.collisionSize * 2, this.y - gameEngine.camera.y);
+            ctx.lineTo(this.x - gameEngine.camera.x, this.y - gameEngine.camera.y - (this.collisionSize));
+            ctx.lineTo(this.x - gameEngine.camera.x + this.collisionSize * 2, this.y - gameEngine.camera.y);
+            ctx.lineTo(this.x - gameEngine.camera.x, this.y - gameEngine.camera.y + (this.collisionSize));
             ctx.closePath();
             ctx.stroke();
         }

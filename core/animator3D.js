@@ -1,6 +1,8 @@
 class Animator3D {
     constructor(spritesheet, width, height, frameCount, frameDuration, reverse, loop) {
-        Object.assign(this, { spritesheet, frameCount, frameDuration, reverse, loop });
+        Object.assign(this, { spritesheet, reverse, loop });
+        this.frameCount = frameCount;
+        this.frameDuration = frameDuration;
         this.elapsedTime = 0;
         this.totalTime = this.frameCount * this.frameDuration;
         this.width = width;

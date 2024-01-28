@@ -7,15 +7,15 @@ class Cave extends GameEntity {
     tilesRevealed = 0;
     // Once the floor exit is revealed, we avoid generating any more.
     exitFound = false;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         // for(let x = 0; x < 256; x++) {
         //     for(let y = 0; y < 256; y++) {
         //         if(x % 2 == 0 && y % 2 == 0) {
-        //             this.game.addEntity(new Floor(this.game, (32 * x) + (32 * y), (16 * y) - (16 * x)));
+        //             gameEngine.addEntity(new Floor((32 * x) + (32 * y), (16 * y) - (16 * x)));
         //         }
         //         else {
-        //             this.game.addEntity(new Floor(this.game, (32 * x) + (32 * y), (16 * y) - (16 * x)));
+        //             gameEngine.addEntity(new Floor((32 * x) + (32 * y), (16 * y) - (16 * x)));
         //         }
         //     }
         // }
@@ -40,17 +40,17 @@ class Cave extends GameEntity {
                 // Delete this wall and replace it with a floor!
                 this.grid[tileX][tileY] = 0;
                 this.entityGrid[tileX][tileY].removeFromWorld = true;
-                this.game.globalEntities.get("hero").heldResources[this.entityGrid[tileX][tileY].resource]++;
-                let floor = new Floor(this.game, this.entityGrid[tileX][tileY].x, this.entityGrid[tileX][tileY].y);
-                this.game.addEntity(floor);
+                gameEngine.globalEntities.get("hero").heldResources[this.entityGrid[tileX][tileY].resource]++;
+                let floor = new Floor(this.entityGrid[tileX][tileY].x, this.entityGrid[tileX][tileY].y);
+                gameEngine.addEntity(floor);
                 this.entityGrid[tileX][tileY] = floor;
                 // Generate walls on tiles around this one that don't have a wall on them.
                 for (let x = tileX - 1; x <= tileX + 1; x++) {
                     for (let y = tileY - 1; y <= tileY + 1; y++) {
                         if (this.entityGrid[x][y] === null) {
                             this.grid[x][y] = 1;
-                            this.entityGrid[x][y] = new StoneBlock(this.game, (32 * x) - (32 * y), (16 * y) + (16 * x));
-                            this.game.addEntity(this.entityGrid[x][y]);
+                            this.entityGrid[x][y] = new StoneBlock((32 * x) - (32 * y), (16 * y) + (16 * x));
+                            gameEngine.addEntity(this.entityGrid[x][y]);
                         }
                     }
                 }
@@ -125,12 +125,12 @@ class Cave extends GameEntity {
         for (let x = 0; x < 256; x++) {
             for (let y = 0; y < 256; y++) {
                 if (this.grid[x][y] == 0 && (x < 127 || x > 129 || y < 127 || y > 129)) {
-                    this.entityGrid[x][y] = new Floor(this.game, (32 * x) - (32 * y), (16 * y) + (16 * x));
-                    this.game.addEntity(this.entityGrid[x][y]);
+                    this.entityGrid[x][y] = new Floor((32 * x) - (32 * y), (16 * y) + (16 * x));
+                    gameEngine.addEntity(this.entityGrid[x][y]);
                 }
                 else if (this.grid[x][y] == 1) {
-                    this.entityGrid[x][y] = new StoneBlock(this.game, (32 * x) - (32 * y), (16 * y) + (16 * x));
-                    this.game.addEntity(this.entityGrid[x][y]);
+                    this.entityGrid[x][y] = new StoneBlock((32 * x) - (32 * y), (16 * y) + (16 * x));
+                    gameEngine.addEntity(this.entityGrid[x][y]);
                 }
             }
         }
@@ -147,7 +147,7 @@ class Cave extends GameEntity {
         revealedTiles.push({ x: currentPosition.x, y: currentPosition.y });
         // The failsafe is in the event that a cave is being generated in a space that doesn't fit
         // the size given. I've found in testing that a failsafe of 200 steps allows for generation
-        // without lagging the game.
+        // without lagging the gameEngine.
         while (steps < caveSize && failsafe < caveSize + 200) {
             let attemptedMovePosition = { x: currentPosition.x, y: currentPosition.y };
             // Move in a random direction. 0 to 3 is clockwise directions, starting from up.
@@ -182,8 +182,8 @@ class Cave extends GameEntity {
         let exitPosition;
         revealedTiles.forEach((element) => {
             if (this.entityGrid[element.x][element.y] === null) {
-                this.entityGrid[element.x][element.y] = new Floor(this.game, (32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
-                this.game.addEntity(this.entityGrid[element.x][element.y]);
+                this.entityGrid[element.x][element.y] = new Floor((32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
+                gameEngine.addEntity(this.entityGrid[element.x][element.y]);
                 this.tilesRevealed++;
                 if (Math.random() < this.tilesRevealed / 10000 && !this.exitFound) {
                     let exitValid = true;
@@ -194,7 +194,7 @@ class Cave extends GameEntity {
                             //     if(this.entityGrid[x][y] instanceof StoneBlock) {
                             //         this.entityGrid[x][y].removeFromWorld = true;
                             //     }
-                            //     this.entityGrid[x][y] = new Floor(this.game, (32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
+                            //     this.entityGrid[x][y] = new Floor((32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
                             //     this.grid[x][y] = 0;
                             // }
                             // revealedTiles.push(new Vector2(x, y));
@@ -209,23 +209,23 @@ class Cave extends GameEntity {
                 }
                 // Have a slight chance to generate a monster on this tile. Currently just a sandbag; add more monsters later!
                 if (Math.random() < 0.1) {
-                    let monster = new Zombie(this.game, (32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
-                    this.game.addEntity(monster);
+                    let monster = new Zombie((32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
+                    gameEngine.addEntity(monster);
                 }
             }
             for (let x = element.x - 1; x <= element.x + 1; x++) {
                 for (let y = element.y - 1; y <= element.y + 1; y++) {
                     if (this.grid[x][y] == -1) {
                         this.grid[x][y] = 1;
-                        this.entityGrid[x][y] = new StoneBlock(this.game, (32 * x) - (32 * y), (16 * y) + (16 * x));
-                        this.game.addEntity(this.entityGrid[x][y]);
+                        this.entityGrid[x][y] = new StoneBlock((32 * x) - (32 * y), (16 * y) + (16 * x));
+                        gameEngine.addEntity(this.entityGrid[x][y]);
                     }
                 }
             }
         });
         // If the exit was revealed, make sure there's no blocks around it.
         if (exitPosition) {
-            this.game.addEntity(new FloorExit(this.game, (32 * exitPosition.x) - (32 * exitPosition.y), (16 * exitPosition.y) + (16 * exitPosition.x)));
+            gameEngine.addEntity(new FloorExit((32 * exitPosition.x) - (32 * exitPosition.y), (16 * exitPosition.y) + (16 * exitPosition.x)));
         }
     }
     /** A helper function to see if a set of XY coordinates is within the map bounds. */

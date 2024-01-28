@@ -1,6 +1,7 @@
 // provide pathfinding to entities.
-function pathfind(source, destination, game) {
-    const cave = game.globalEntities.get('cave');
+// IMPORTANT: path is reversed so it is easy to pop next waypoint off end.
+function pathfind(source, destination) {
+    const cave = gameEngine.globalEntities.get('cave');
     if (cave.grid[source.x][source.y] == 1) {
         console.error("Cannot pathfind from inside wall!");
         return;

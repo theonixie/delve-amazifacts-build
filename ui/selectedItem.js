@@ -1,7 +1,7 @@
 class SelectedItem extends HudEntity {
     item;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         this.item = null;
     }
     update() {

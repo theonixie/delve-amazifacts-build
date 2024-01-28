@@ -39,10 +39,10 @@ class EnergyShot extends Skill {
             }
         ];
     }
-    cast(game, player) {
+    cast(player) {
         if (player.energy - 4 >= 0) {
-            //game.addEntity()
-            let projectile = new Projectile(game, player.x, player.y, player, 0, 5);
+            //gameEngine.addEntity()
+            let projectile = new Projectile(player.x, player.y, player, 0, 5);
             projectile.sprite = new Animator3D(ASSET_MANAGER.getAsset("./sprites/skill/energy_shot.png"), 32, 32, 4, 0.05, false, true);
             projectile.collisionSize = 4;
             projectile.onEnemyCollision = () => {
@@ -51,13 +51,13 @@ class EnergyShot extends Skill {
             projectile.onWallCollision = () => {
                 projectile.removeFromWorld = true;
             };
-            projectile.velocity = game.getMousePosition().minus(new Vector2(player.x, player.y)).normalized().scale(this.projectileSpeed);
-            game.addEntity(projectile);
+            projectile.velocity = gameEngine.getMousePosition().minus(new Vector2(player.x, player.y)).normalized().scale(this.projectileSpeed);
+            gameEngine.addEntity(projectile);
             if (this.perk0 == 1) {
                 // Fire two extra shots off to the sides.
                 // This for-loop will go from -1, to 1, then exit.
                 for (let i = -1; i <= 1; i += 2) {
-                    let projectile = new Projectile(game, player.x, player.y, player, 0, 5);
+                    let projectile = new Projectile(player.x, player.y, player, 0, 5);
                     projectile.sprite = new Animator3D(ASSET_MANAGER.getAsset("./sprites/skill/energy_shot.png"), 32, 32, 4, 0.05, false, true);
                     projectile.collisionSize = 4;
                     projectile.onEnemyCollision = () => {
@@ -66,8 +66,8 @@ class EnergyShot extends Skill {
                     projectile.onWallCollision = () => {
                         projectile.removeFromWorld = true;
                     };
-                    projectile.velocity = game.getMousePosition().minus(new Vector2(player.x, player.y)).normalized().scale(this.projectileSpeed).rotated(15 * i);
-                    game.addEntity(projectile);
+                    projectile.velocity = gameEngine.getMousePosition().minus(new Vector2(player.x, player.y)).normalized().scale(this.projectileSpeed).rotated(15 * i);
+                    gameEngine.addEntity(projectile);
                 }
             }
             player.energy -= 4;
@@ -100,11 +100,11 @@ class BlastCharge extends Skill {
             }
         ];
     }
-    cast(game, player) {
+    cast(player) {
         if (this.cooldownTimer <= 0) {
-            let bomb = new Bomb(game, player.x, player.y);
+            let bomb = new Bomb(player.x, player.y);
             bomb.owner = player;
-            game.addEntity(bomb);
+            gameEngine.addEntity(bomb);
             this.cooldownTimer = this.cooldown / (player.cooldownMod + (player.reflex * 0.02));
         }
     }

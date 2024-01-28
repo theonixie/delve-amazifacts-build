@@ -1,25 +1,25 @@
 class FloorExit extends GameEntity {
     sprite;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         this.inCave = true;
         this.sprite = ASSET_MANAGER.getAsset("./sprites/tile/floor_exit.png");
     }
     update() {
-        let mousePos = this.game.getMousePosition();
+        let mousePos = gameEngine.getMousePosition();
         if (mousePos.x > this.x - 16 && mousePos.x < this.x + 16 && mousePos.y > this.y - 16 && mousePos.y < this.y + 16 && Input.frameKeys["KeyE"]) {
             if (this.withinPlayerRange()) {
                 // Go deeper...
-                this.game.enterNewCave();
+                gameEngine.enterNewCave();
             }
         }
     }
     draw(ctx) {
-        ctx.drawImage(this.sprite, this.x - this.game.camera.x - 96, this.y - this.game.camera.y - 48);
-        let mousePos = this.game.getMousePosition();
+        ctx.drawImage(this.sprite, this.x - gameEngine.camera.x - 96, this.y - gameEngine.camera.y - 48);
+        let mousePos = gameEngine.getMousePosition();
         if (mousePos.x > this.x - 16 && mousePos.x < this.x + 16 && mousePos.y > this.y - 16 && mousePos.y < this.y + 16) {
             if (this.withinPlayerRange()) {
-                this.game.tooltipArray = [{
+                gameEngine.tooltipArray = [{
                         text: "Floor Exit",
                         fontSize: 12
                     },
@@ -29,7 +29,7 @@ class FloorExit extends GameEntity {
                     }];
             }
             else {
-                this.game.tooltipArray = [{
+                gameEngine.tooltipArray = [{
                         text: "Floor Exit",
                         fontSize: 12
                     }];
@@ -37,7 +37,7 @@ class FloorExit extends GameEntity {
         }
     }
     withinPlayerRange() {
-        let player = this.game.globalEntities.get("hero");
+        let player = gameEngine.globalEntities.get("hero");
         return Math.abs(this.x - player.x) < 128 && Math.abs(this.y - player.y) < 64;
     }
 }

@@ -5,14 +5,14 @@ class StatMenu extends HudEntity {
     player;
     /** Child entities that belong to this entity. */
     children;
-    constructor(game, x, y) {
-        super(game, x, y);
+    constructor(x, y) {
+        super(x, y);
         this.menuVisible = false;
         this.backgroundSprite = ASSET_MANAGER.getAsset("./sprites/ui/menu_stats.png");
         this.children = [];
         let tooltipTexts = ["Increases maximum HP.", "Increases maximum EP.", "Increases attack damage.", "Increases recharge speed for skills and dodging."];
         for (let i = 0; i < 4; i++) {
-            this.children.push(new HudButton(this.game, 30, 128 + i * 48, 32, 32));
+            this.children.push(new HudButton(30, 128 + i * 48, 32, 32));
             this.children[i].tooltipArray = [{
                     text: tooltipTexts[i],
                     fontSize: 12

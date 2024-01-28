@@ -150,6 +150,22 @@ class CooldownModifier extends ItemModifier {
         };
     }
 }
+class MineSpeedModifier extends ItemModifier {
+    constructor(rank) {
+        super();
+        this.maxRank = 4;
+        this.setRank(rank);
+    }
+    setRank(rank) {
+        this.rank = Math.min(rank, this.maxRank);
+        this.onEquip = (hero) => { hero.mineSpeedMod += 0.25 * this.rank; };
+        this.onUnequip = (hero) => { hero.mineSpeedMod -= 0.25 * this.rank; };
+        this.tooltip = {
+            text: "Increases mining speed by " + (25 * this.rank).toString() + "% [" + ("★".repeat(this.rank)) + ("☆".repeat(this.maxRank - this.rank)) + "]",
+            fontSize: 10
+        };
+    }
+}
 const ItemGenerator = class {
     static weaponModifiers;
     static initializeModifiers() {
@@ -161,6 +177,7 @@ const ItemGenerator = class {
         this.weaponModifiers.push(LeechModifier);
         this.weaponModifiers.push(MaxDamageModifier);
         this.weaponModifiers.push(CooldownModifier);
+        this.weaponModifiers.push(MineSpeedModifier);
     }
     static generateWeapon() {
         let weapon = new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon/sword0.png"));

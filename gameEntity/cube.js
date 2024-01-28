@@ -1,6 +1,6 @@
 class Cube {
-    constructor(game, x, y) {
-        Object.assign(this, { game, x, y });
+    constructor(x, y) {
+        Object.assign(this, { x, y });
         this.spritesheet = ASSET_MANAGER.getAsset("./sprites/woodCrates.png");
     }
     ;
