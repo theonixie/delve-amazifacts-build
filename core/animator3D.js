@@ -9,8 +9,8 @@ class Animator3D {
         this.height = height;
     }
     ;
-    drawFrame(tick, ctx, x, y, scale, facingDirection) {
-        this.elapsedTime += tick;
+    drawFrame(ctx, x, y, scale, facingDirection) {
+        this.elapsedTime += gameEngine.clockTick;
         if (this.isDone()) {
             if (this.loop) {
                 this.elapsedTime -= this.totalTime;

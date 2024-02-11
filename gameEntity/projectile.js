@@ -43,7 +43,8 @@ class Projectile extends GameEntity {
                 if (magnitude < that.collisionSize + other.collisionSize) {
                     if (other instanceof StoneBlock) {
                         if (that.onWallCollision !== undefined) {
-                            that.onWallCollision();
+                            that.onWallCollision(other);
+                            thisPosition = new Vector2(that.x, that.y);
                         }
                     }
                 }
@@ -52,7 +53,7 @@ class Projectile extends GameEntity {
     }
     draw(ctx) {
         if (this.sprite !== undefined)
-            this.sprite.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - (this.sprite.width * 0.5), this.y - gameEngine.camera.y - (this.sprite.height * 0.5) - 16, 1, 0);
+            this.sprite.drawFrame(ctx, this.x - gameEngine.camera.x - (this.sprite.width * 0.5), this.y - gameEngine.camera.y - (this.sprite.height * 0.5) - 16, 1, 0);
         if (params.drawColliders) {
             ctx.lineWidth = 4;
             ctx.strokeStyle = "red";

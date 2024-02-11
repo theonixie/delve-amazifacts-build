@@ -128,7 +128,7 @@ class InventoryMenu extends HudEntity {
             else { // Mouse is not hovering right side of screen.
                 if (Input.leftClick) {
                     // If we are holding an item and the recycle menu isn't open, drop it.
-                    if (this.selectedItem.item !== null && !gameEngine.globalEntities.get("recycleMenu").menuVisible) {
+                    if (this.selectedItem.item !== null && !gameEngine.globalEntities.get("recycleMenu").menuVisible && !gameEngine.globalEntities.get("skillUpgradeMenu").menuVisible) {
                         gameEngine.addEntity(new DroppedItem(this.player.x, this.player.y, this.selectedItem.item));
                         this.selectedItem.item = null;
                     }

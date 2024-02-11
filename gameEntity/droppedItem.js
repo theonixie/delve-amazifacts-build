@@ -53,7 +53,7 @@ class DroppedItem extends GameEntity {
     }
     draw(ctx) {
         ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
-        this.spritesheet.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 56 - this.height, 1);
+        this.spritesheet.drawFrame(ctx, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 56 - this.height, 1);
         let mousePos = gameEngine.getMousePosition();
         if (mousePos.x > this.x - 8 && mousePos.x < this.x + 8 && mousePos.y > this.y - 12 && mousePos.y < this.y + 4) {
             if (this.withinPlayerRange()) {

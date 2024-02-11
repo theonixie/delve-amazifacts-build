@@ -53,4 +53,10 @@ window.requestAnimFrame = (() => {
 const getDistance = (p1, p2) => {
     return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 };
+function drawPoint(ctx, x, y) {
+    ctx.beginPath();
+    ctx.moveTo(x - gameEngine.camera.x, y - gameEngine.camera.y);
+    ctx.ellipse(x - gameEngine.camera.x - 1, y - gameEngine.camera.y - 1, 2, 2, 0, 0, 0);
+    ctx.stroke();
+}
 //# sourceMappingURL=util.js.map

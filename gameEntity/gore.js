@@ -34,7 +34,42 @@ class Gore extends GameEntity {
     }
     draw(ctx) {
         ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 4, this.y - gameEngine.camera.y - 2, 8, 4);
-        this.spritesheet.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 8, this.y - gameEngine.camera.y - 8 - this.height, 1, this.facingDirection);
+        this.spritesheet.drawFrame(ctx, this.x - gameEngine.camera.x - 8, this.y - gameEngine.camera.y - 8 - this.height, 1, this.facingDirection);
+    }
+}
+class Rubble extends GameEntity {
+    height;
+    velocity;
+    bounceVelocity;
+    facingDirection;
+    bounces; // Once this chunk bounces a certain number of times, it is deleted.
+    removeFromWorld; // When set to true, this entity is deleted.
+    shadowSprite;
+    constructor(x, y, velocity) {
+        super(x, y);
+        this.height = 0;
+        this.bounceVelocity = Math.random() * 300;
+        this.bounces = 0;
+        this.velocity = velocity;
+        this.shadowSprite = ASSET_MANAGER.getAsset("./sprites/vfx/shadow.png");
+    }
+    update() {
+        this.x += this.velocity.x * gameEngine.clockTick;
+        this.y += this.velocity.y * gameEngine.clockTick;
+        this.bounceVelocity -= 800 * gameEngine.clockTick;
+        this.height += this.bounceVelocity * gameEngine.clockTick;
+        if (this.height < 0) {
+            this.removeFromWorld = true;
+        }
+        let angleRad = Math.atan2(-this.velocity.x, this.velocity.y);
+        this.facingDirection = Math.round(((360 + (180 * angleRad / Math.PI)) % 360) / 22.5) % 16;
+    }
+    draw(ctx) {
+        ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 4, this.y - gameEngine.camera.y - 2, 8, 4);
+        ctx.fillStyle = "#3A2609";
+        ctx.beginPath();
+        ctx.arc(this.x - gameEngine.camera.x, this.y - gameEngine.camera.y - this.height, 3, 0, 2 * Math.PI);
+        ctx.fill();
     }
 }
 //# sourceMappingURL=gore.js.map

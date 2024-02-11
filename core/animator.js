@@ -5,8 +5,8 @@ class Animator {
         this.totalTime = this.frameCount * this.frameDuration;
     }
     ;
-    drawFrame(tick, ctx, x, y, scale) {
-        this.elapsedTime += tick;
+    drawFrame(ctx, x, y, scale) {
+        this.elapsedTime += gameEngine.clockTick;
         if (this.isDone()) {
             if (this.loop) {
                 this.elapsedTime -= this.totalTime;

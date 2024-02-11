@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>DELVE: The Legendary Amazifacts</title>
@@ -7,7 +8,7 @@
         These are all of the scripts for the game.
         Headers are used to separate each of the categories of files.
         Please keep them organized.
-    --> 
+    -->
     <!-- CORE -->
     <script type="text/javascript" src="./core/assetmanager.js"></script>
     <script type="text/javascript" src="./core/animator.js"></script>
@@ -16,15 +17,22 @@
     <script type="text/javascript" src="./core/gameEngine.js"></script>
     <script type="text/javascript" src="./core/input.js"></script>
     <script type="text/javascript" src="./core/util.js"></script>
+    <script type="text/javascript" src="./core/pathfinder.js"></script>
+    <script type="text/javascript" src="./core/fsm/fsm.js"></script>
+    <script type="text/javascript" src="./core/fsm/behaviors/behavior.js"></script>
+    <script type="text/javascript" src="./core/fsm/behaviors/chasing.js"></script>
+    <script type="text/javascript" src="./core/fsm/behaviors/slashing.js"></script>
     <script type="text/javascript" src="./main.js"></script>
     <!-- GAME ENTITIES -->
     <script type="text/javascript" src="./gameEntity/gameEntity.js"></script>
     <script type="text/javascript" src="./gameEntity/character.js"></script>
     <script type="text/javascript" src="./gameEntity/hero.js"></script>
     <script type="text/javascript" src="./gameEntity/squire.js"></script>
-    <script type="text/javascript" src="./gameEntity/enemy.js"></script>
-    <script type="text/javascript" src="./gameEntity/sandbag.js"></script>
-    <script type="text/javascript" src="./gameEntity/zombie.js"></script>
+    <script type="text/javascript" src="./gameEntity/tarren.js"></script>
+    <script type="text/javascript" src="./gameEntity/enemy/enemy.js"></script>
+    <script type="text/javascript" src="./gameEntity/enemy/sandbag.js"></script>
+    <script type="text/javascript" src="./gameEntity/enemy/slime.js"></script>
+    <script type="text/javascript" src="./gameEntity/enemy/zombie.js"></script>
     <script type="text/javascript" src="./gameEntity/cube.js"></script>
     <script type="text/javascript" src="./gameEntity/cave.js"></script>
     <script type="text/javascript" src="./gameEntity/stoneBlock.js"></script>
@@ -34,6 +42,7 @@
     <script type="text/javascript" src="./gameEntity/gore.js"></script>
     <script type="text/javascript" src="./gameEntity/floor.js"></script>
     <script type="text/javascript" src="./gameEntity/droppedItem.js"></script>
+    <script type="text/javascript" src="./gameEntity/droppedStempak.js"></script>
     <script type="text/javascript" src="./gameEntity/floorEntrance.js"></script>
     <script type="text/javascript" src="./gameEntity/floorExit.js"></script>
     <script type="text/javascript" src="./gameEntity/caveEntrance.js"></script>
@@ -48,14 +57,19 @@
     <script type="text/javascript" src="./ui/hud.js"></script>
     <script type="text/javascript" src="./ui/damageIndicator.js"></script>
     <script type="text/javascript" src="./ui/recycleMenu.js"></script>
+    <script type="text/javascript" src="./ui/skillUpgradeMenu.js"></script>
     <script type="text/javascript" src="./ui/selectedItem.js"></script>
+    <script type="text/javascript" src="./ui/titleScreen.js"></script>
     <!-- GAME DATA -->
     <script type="text/javascript" src="./data/item.js"></script>
     <script type="text/javascript" src="./data/weapon.js"></script>
     <script type="text/javascript" src="./data/stemkit.js"></script>
     <script type="text/javascript" src="./data/skill.js"></script>
 </head>
+
 <body style="background-color:black;">
-    <canvas id="gameWorld" tabindex="1" width="1200" height="800" style="display: block; margin: auto; border: 1px solid brown; background-color: rgb(0, 0, 0); image-rendering:pixelated;"></canvas>
+    <canvas id="gameWorld" tabindex="1" width="1200" height="800"
+        style="display: block; margin: auto; border: 1px solid brown; background-color: rgb(0, 0, 0); image-rendering:pixelated;"></canvas>
 </body>
+
 </html>

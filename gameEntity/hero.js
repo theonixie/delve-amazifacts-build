@@ -2,8 +2,8 @@
  * The main class for the player character. Handles the player object and all behavior associated with it.
  */
 class Hero extends Character {
-    animFrame;
-    animTimer;
+    dead = false;
+    respawnTimer = 0;
     facingDirection;
     facingNormal;
     moveSpeed;
@@ -14,7 +14,7 @@ class Hero extends Character {
     skillShootAnim;
     mineAnim;
     shadowSprite;
-    footstepSfx = ["./sounds/footstep0.ogg", "./sounds/footstep1.ogg", "./sounds/footstep2.ogg", "./sounds/footstep3.ogg"];
+    footstepSfx = ["./sounds/footstep0.wav", "./sounds/footstep1.wav", "./sounds/footstep2.wav"];
     footstepSfxCounter = 0;
     /** The player's level. Increase this by gaining experience points. */
     level;
@@ -113,8 +113,6 @@ class Hero extends Character {
     constructor(x, y) {
         super(x, y);
         this.collisionSize = 8;
-        this.animFrame = 0;
-        this.animTimer = 0;
         this.velocity = new Vector2(0, 0);
         this.facingDirection = 0;
         this.facingNormal = new Vector2(0, 1);
@@ -154,12 +152,22 @@ class Hero extends Character {
     }
     ;
     update() {
-        this.animTimer++;
-        if (this.animTimer > 10) {
-            this.animFrame++;
-            if (this.animFrame > 3)
-                this.animFrame = 0;
-            this.animTimer = 0;
+        if (this.dead) {
+            this.respawnTimer += gameEngine.clockTick;
+            if (this.respawnTimer >= 3.0) { // Respawn.
+                // Go to outpost.
+                gameEngine.inCave = false;
+                this.inCave = false;
+                this.x = -860;
+                this.y = 0;
+                this.dead = false;
+                this.respawnTimer = 0;
+                this.health = this.maxHealth;
+                if (this.heldStemkit) {
+                    this.heldStemkit.charges = this.heldStemkit.capacity;
+                }
+            }
+            return; // Don't run any of the other code while we're dead.
         }
         this.velocity.x = 0;
         this.velocity.y = 0;
@@ -258,6 +266,7 @@ class Hero extends Character {
             if (this.heldStemkit !== null && this.heldStemkit.charges > 0 && this.health < this.maxHealth) {
                 this.gainHealth(this.heldStemkit.healAmount);
                 this.heldStemkit.charges--;
+                ASSET_MANAGER.playAsset("./sounds/stemkit_use.wav");
             }
         }
         this.checkCollision();
@@ -374,30 +383,26 @@ class Hero extends Character {
                 let goreVelocity = new Vector2((Math.random() * 200) - 100, (Math.random() * 200) - 100);
                 gameEngine.addEntity(new Gore(this.x, this.y, goreVelocity));
             }
-            // // This is for testing item drops.
-            // gameEngine.addEntity(new DroppedItem(this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
-            // gameEngine.addEntity(new DroppedItem(this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
-            // gameEngine.addEntity(new DroppedItem(this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
-            // gameEngine.addEntity(new DroppedItem(this.x, this.y, new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon_sword0.png"))));
-            gameEngine.addEntity(new DroppedItem(this.x, this.y, ItemGenerator.generateWeapon()));
-            this.removeFromWorld = true;
+            this.dead = true;
         }
         this.velocity = new Vector2(this.x - projectile.x, this.y - projectile.y).normalized().scale(256);
     }
     draw(ctx) {
+        if (this.dead)
+            return; // Don't draw anything if we are dead.
         ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
         //ctx.drawImage(this.spritesheet, this.animFrame * 64, this.facingDirection * 64, 64, 64, this.x, this.y, 64, 64);
         if (!this.attackSwingAnim.isDone()) {
-            this.attackSwingAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 24, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
+            this.attackSwingAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 24, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         else if (!this.dodgeAnim.isDone()) {
-            this.dodgeAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
+            this.dodgeAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         else if (!this.mineAnim.isDone()) {
-            this.mineAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
+            this.mineAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         else if (this.velocity.x != 0 || this.velocity.y != 0) {
-            this.runAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
+            this.runAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
             if (this.runAnim.currentFrame() >= 7 && this.footstepSfxCounter == 0) {
                 ASSET_MANAGER.playAsset(this.footstepSfx[Math.floor(Math.random() * this.footstepSfx.length)]);
                 this.footstepSfxCounter = 1;
@@ -411,7 +416,7 @@ class Hero extends Character {
             }
         }
         else {
-            this.standAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
+            this.standAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         if (params.drawColliders) {
             ctx.lineWidth = 4;

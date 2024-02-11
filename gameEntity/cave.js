@@ -7,6 +7,7 @@ class Cave extends GameEntity {
     tilesRevealed = 0;
     // Once the floor exit is revealed, we avoid generating any more.
     exitFound = false;
+    exitPosition;
     constructor(x, y) {
         super(x, y);
         // for(let x = 0; x < 256; x++) {
@@ -55,6 +56,9 @@ class Cave extends GameEntity {
                     }
                 }
             }
+            ASSET_MANAGER.playAsset("./sounds/block_break.wav");
+            for (let i = 0; i < 16; i++)
+                gameEngine.addEntity(new Rubble(worldPosition.x + (Math.random() * 32) - 16, worldPosition.y + (Math.random() * 32) - 16, new Vector2((Math.random() * 32) - 16, (Math.random() * 32) - 16)));
         }
     }
     createStartingCave() {
@@ -179,7 +183,6 @@ class Cave extends GameEntity {
             }
             failsafe++;
         }
-        let exitPosition;
         revealedTiles.forEach((element) => {
             if (this.entityGrid[element.x][element.y] === null) {
                 this.entityGrid[element.x][element.y] = new Floor((32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
@@ -203,13 +206,13 @@ class Cave extends GameEntity {
                         }
                     }
                     if (exitValid) {
-                        exitPosition = new Vector2(element.x, element.y);
+                        this.exitPosition = new Vector2(element.x, element.y);
                         this.exitFound = true;
                     }
                 }
                 // Have a slight chance to generate a monster on this tile. Currently just a sandbag; add more monsters later!
                 if (Math.random() < 0.1) {
-                    let monster = new Zombie((32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
+                    let monster = new (Math.random() < 0.5 ? Zombie : Slime)((32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
                     gameEngine.addEntity(monster);
                 }
             }
@@ -224,8 +227,8 @@ class Cave extends GameEntity {
             }
         });
         // If the exit was revealed, make sure there's no blocks around it.
-        if (exitPosition) {
-            gameEngine.addEntity(new FloorExit((32 * exitPosition.x) - (32 * exitPosition.y), (16 * exitPosition.y) + (16 * exitPosition.x)));
+        if (this.exitFound) {
+            gameEngine.addEntity(new FloorExit((32 * this.exitPosition.x) - (32 * this.exitPosition.y), (16 * this.exitPosition.y) + (16 * this.exitPosition.x)));
         }
     }
     /** A helper function to see if a set of XY coordinates is within the map bounds. */

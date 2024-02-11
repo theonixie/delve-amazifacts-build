@@ -25,7 +25,7 @@ class Squire extends GameEntity {
     }
     draw(ctx) {
         ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
-        this.standAnim.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 56, 1);
+        this.standAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 56, 1);
         let mousePos = gameEngine.getMousePosition();
         if (mousePos.x > this.x - 16 && mousePos.x < this.x + 16 && mousePos.y > this.y - 48 && mousePos.y < this.y + 4) {
             if (this.withinPlayerRange()) {

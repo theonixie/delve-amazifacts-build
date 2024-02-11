@@ -14,6 +14,7 @@ class HudButton extends HudEntity {
     update() {
         if (Input.mouse.x > this.x && Input.mouse.x < this.x + this.width && Input.mouse.y > this.y && Input.mouse.y < this.y + this.height) {
             if (Input.leftClick) {
+                console.log("button clicked");
                 this.onClicked();
             }
         }
@@ -26,7 +27,7 @@ class HudButton extends HudEntity {
         else
             ctx.drawImage(this.disabledSprite, this.x, this.y);
         if (Input.mouse.x > this.x && Input.mouse.x < this.x + this.width && Input.mouse.y > this.y && Input.mouse.y < this.y + this.height) {
-            console.log("Button tooltip");
+            //console.log("Button tooltip");
             if (this.tooltipArray !== null)
                 gameEngine.tooltipArray = this.tooltipArray;
         }

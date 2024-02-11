@@ -16,7 +16,7 @@ class BombExplosion extends GameEntity {
         }
     }
     draw(ctx) {
-        this.sprite.drawFrame(gameEngine.clockTick, ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 56, 1);
+        this.sprite.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 56, 1);
     }
 }
 //# sourceMappingURL=bombExplosion.js.map

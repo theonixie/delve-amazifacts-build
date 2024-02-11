@@ -157,8 +157,10 @@ class GameEngine {
         else {
             this.clockTick = 0;
         }
-        this.camera.x = Math.round(this.cameraTarget.x - (this.ctx.canvas.width * 0.25) + (this.globalEntities.get("inventoryMenu").menuVisible ? 150.0 : 0.0) - (this.globalEntities.get("statMenu").menuVisible ? 150.0 : 0.0));
-        this.camera.y = Math.round(this.cameraTarget.y - ((this.ctx.canvas.height + 64) * 0.25));
+        if (this.cameraTarget) {
+            this.camera.x = Math.round(this.cameraTarget.x - (this.ctx.canvas.width * 0.25) + (this.globalEntities.get("inventoryMenu").menuVisible ? 150.0 : 0.0) - (this.globalEntities.get("statMenu").menuVisible ? 150.0 : 0.0));
+            this.camera.y = Math.round(this.cameraTarget.y - ((this.ctx.canvas.height + 64) * 0.25));
+        }
         if (Input.frameKeys["Backquote"] == true) {
             params.drawColliders = !params.drawColliders;
         }

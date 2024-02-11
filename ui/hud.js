@@ -93,6 +93,9 @@ class MapDisplay extends HudEntity {
             // Ideally prioritize drawing any important elements (such as entrance/exit/wall/ore)
             // Otherwise draws floor texture
             ctx.fillStyle = "white";
+            ctx.font = "bold 10px monospace";
+            ctx.textAlign = "left";
+            ctx.fillText("FLOOR " + gameEngine.currentFloor.toString(), 555, 16);
             ctx.globalAlpha = 0.8;
             ctx.lineWidth = 3;
             ctx.strokeStyle = "white";
@@ -110,21 +113,28 @@ class MapDisplay extends HudEntity {
                 for (let j = -19; j < 20; j++) {
                     if (heropositionx + i >= 0 && heropositionx + i < 255 && heropositiony + j >= 0 && heropositiony + j < 255 &&
                         this.cave.grid[heropositionx + i][heropositiony + j] == 0) {
-                        if (heropositionx + i === 128 && heropositiony + j === 128) {
-                            ctx.fillStyle = "green";
-                        }
-                        else {
-                            ctx.fillStyle = "white";
-                        }
-                        ctx.fillRect(516 + (i * 2) - (j * 2), 47 + i + j, 2, 1);
-                        ctx.fillRect(515 + (i * 2) - (j * 2), 48 + i + j, 4, 1);
-                        ctx.fillRect(516 + (i * 2) - (j * 2), 49 + i + j, 2, 1);
+                        fillTile(i, j);
                     }
                 }
+            }
+            ctx.fillStyle = "green";
+            let nodePositionX = Math.min(Math.max(128 - heropositionx, -19), 19);
+            let nodePositionY = Math.min(Math.max(128 - heropositiony, -19), 19);
+            fillTile(nodePositionX, nodePositionY);
+            if (this.cave.exitFound) {
+                ctx.fillStyle = "red";
+                let nodePositionX = Math.min(Math.max(this.cave.exitPosition.x - heropositionx, -19), 19);
+                let nodePositionY = Math.min(Math.max(this.cave.exitPosition.y - heropositiony, -19), 19);
+                fillTile(nodePositionX, nodePositionY);
             }
             ctx.globalAlpha = 1.0;
             ctx.fillStyle = "cyan";
             ctx.fillRect(516, 47, 2, 2);
+        }
+        function fillTile(i, j) {
+            ctx.fillRect(516 + (i * 2) - (j * 2), 47 + i + j, 2, 1);
+            ctx.fillRect(515 + (i * 2) - (j * 2), 48 + i + j, 4, 1);
+            ctx.fillRect(516 + (i * 2) - (j * 2), 49 + i + j, 2, 1);
         }
     }
 }
