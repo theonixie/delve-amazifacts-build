@@ -17,10 +17,11 @@ ASSET_MANAGER.queueDownload("./sprites/hero/attack_swing.png");
 ASSET_MANAGER.queueDownload("./sprites/hero/mine.png");
 ASSET_MANAGER.queueDownload("./sprites/hero/skill_shoot.png");
 // ICONS
-ASSET_MANAGER.queueDownload("./sprites/icon/skill0.png");
-ASSET_MANAGER.queueDownload("./sprites/icon/skill1.png");
-ASSET_MANAGER.queueDownload("./sprites/icon/skillcard0.png");
-ASSET_MANAGER.queueDownload("./sprites/icon/skillcard1.png");
+// Set this for-loop to match the number of in-game skills.
+for (let i = 0; i < 4; i++) {
+    ASSET_MANAGER.queueDownload("./sprites/icon/skill" + i.toString() + ".png");
+    ASSET_MANAGER.queueDownload("./sprites/icon/skillcard" + i.toString() + ".png");
+}
 ASSET_MANAGER.queueDownload("./sprites/icon/stemkit.png");
 ASSET_MANAGER.queueDownload("./sprites/icon/sword0.png");
 // OUTPOST
@@ -32,6 +33,7 @@ ASSET_MANAGER.queueDownload("./sprites/outpost/house_squire.png");
 // SKILLS
 ASSET_MANAGER.queueDownload("./sprites/skill/bomb.png");
 ASSET_MANAGER.queueDownload("./sprites/skill/energy_shot.png");
+ASSET_MANAGER.queueDownload("./sprites/skill/energy_disk.png");
 // TILES
 ASSET_MANAGER.queueDownload("./sprites/tile/floor_entrance.png");
 ASSET_MANAGER.queueDownload("./sprites/tile/floor_exit.png");

@@ -75,8 +75,9 @@ class TitleScreen extends HudEntity {
         gameEngine.addEntity(new DroppedItem(-96, 4060, new BlastCharge()));
         gameEngine.addEntity(new DroppedItem(-40, 4060, new EnergyDisk()));
         gameEngine.addEntity(new DroppedItem(-24, 4060, new EnergyBlast()));
-        for (let i = 0; i < 5; i++)
-            gameEngine.addEntity(new DroppedItem(-60, 4000, ItemGenerator.generateWeapon()));
+        // // Weapon generation testing.
+        // for(let i = 0; i < 5; i++)
+        //     gameEngine.addEntity(new DroppedItem(-60, 4000, ItemGenerator.generateWeapon()));
         gameEngine.addEntity(selectedItem);
         // Outpost stuff
         gameEngine.addEntity(new Squire(-1064, -90));
@@ -104,6 +105,7 @@ class TitleScreen extends HudEntity {
         mapDisplay.hero = hero;
         mapDisplay.cave = cave;
         gameEngine.addEntity(new Hud(0, 0));
+        gameEngine.gameActive = true;
     }
 }
 //# sourceMappingURL=titleScreen.js.map

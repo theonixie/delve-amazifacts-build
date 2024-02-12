@@ -13,6 +13,9 @@ class GameEngine {
     hudEntities = [];
     inCave;
     paused;
+    gameActive = false;
+    enemiesDefeated = 0;
+    timeElapsed = 0;
     currentFloor = 1;
     options;
     constructor(options) {
@@ -170,6 +173,8 @@ class GameEngine {
         // Reset the frame-based input variables.
         Input.frameKeys = {};
         Input.leftClick = false;
+        if (this.gameActive && !this.paused)
+            this.timeElapsed += this.clockTick;
     }
     ;
     loop() {
@@ -191,13 +196,29 @@ class GameEngine {
             }
         }
         this.currentFloor++; // Go to the next floor!
-        let player = this.globalEntities.get("hero");
-        player.x = 0;
-        player.y = 4096;
-        let cave = this.globalEntities.get("cave");
-        cave.tilesRevealed = 0;
-        cave.exitFound = false;
-        cave.createStartingCave();
+        if (this.currentFloor >= 10) { // Game end.
+            this.currentFloor = 1; // Reset floor counter.
+            let player = this.globalEntities.get("hero");
+            let cave = this.globalEntities.get("cave");
+            cave.tilesRevealed = 0;
+            cave.exitFound = false;
+            cave.createStartingCave();
+            gameEngine.inCave = false;
+            player.inCave = false;
+            player.x = -860;
+            player.y = 0;
+            this.gameActive = false;
+            this.addEntity(new ResultScreen(0, 0));
+        }
+        else {
+            let player = this.globalEntities.get("hero");
+            player.x = 0;
+            player.y = 4096;
+            let cave = this.globalEntities.get("cave");
+            cave.tilesRevealed = 0;
+            cave.exitFound = false;
+            cave.createStartingCave();
+        }
     }
 }
 ;

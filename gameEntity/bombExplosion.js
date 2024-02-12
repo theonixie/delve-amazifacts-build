@@ -1,9 +1,9 @@
 class BombExplosion extends GameEntity {
     sprite;
     removeFromWorld;
-    constructor(x, y, owner) {
+    constructor(x, y, owner, damage) {
         super(x, y);
-        let projectile = new Projectile(x, y, owner, 0.1, 20);
+        let projectile = new Projectile(x, y, owner, 0.1, damage);
         projectile.onWallCollision = () => {
             gameEngine.globalEntities.get("cave").mineTile(new Vector2(this.x, this.y));
         };

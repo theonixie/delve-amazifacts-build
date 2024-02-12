@@ -1,4 +1,4 @@
-class Zombie extends Enemy {
+class Slime extends Enemy {
     facingDirection;
     moveSpeed;
     attackTimer = 0;
@@ -18,14 +18,14 @@ class Zombie extends Enemy {
         this.collisionSize = 8;
         this.health = 15;
         this.removeFromWorld = false;
-        this.experiencePoints = 8;
+        this.experiencePoints = 4;
         this.velocity = new Vector2(0, 0);
         this.facingDirection = 0;
-        this.moveSpeed = 60;
+        this.moveSpeed = 30;
         this.target = gameEngine.globalEntities.get("hero");
         //this.standSheet = ASSET_MANAGER.getAsset("./sprites/testCharacter.png");
-        this.runAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/zombie/walk.png"), 64, 64, 12, 0.08, false, true);
-        this.standAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/zombie/walk.png"), 64, 64, 1, 0.08, false, true);
+        this.runAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/slime/walk.png"), 64, 64, 15, 0.08, false, true);
+        this.standAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/slime/walk.png"), 64, 64, 1, 0.08, false, true);
         this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/zombie/attack.png"), 64, 64, 8, 0.05, false, false);
         this.attackSwingAnim.elapsedTime = this.attackSwingAnim.totalTime; // Make the animation start in it's finished state.
         this.shadowSprite = ASSET_MANAGER.getAsset("./sprites/vfx/shadow.png");
@@ -241,4 +241,4 @@ class Zombie extends Enemy {
     }
     ;
 }
-//# sourceMappingURL=zombie.js.map
+//# sourceMappingURL=slime.js.map

@@ -1,5 +1,6 @@
 class Bomb extends GameEntity {
     owner;
+    damage;
     timer;
     explosionDelay;
     shakeOffset;
@@ -23,8 +24,8 @@ class Bomb extends GameEntity {
             // I think that actually might be fairly balanced and make sense for a center explosion to deal more
             // damage.
             for (let x = -4; x <= 4; x++) {
-                gameEngine.addEntity(new BombExplosion(this.x + (x * 32), this.y + (x * 16), this.owner));
-                gameEngine.addEntity(new BombExplosion(this.x + (x * 32), this.y - (x * 16), this.owner));
+                gameEngine.addEntity(new BombExplosion(this.x + (x * 32), this.y + (x * 16), this.owner, this.damage));
+                gameEngine.addEntity(new BombExplosion(this.x + (x * 32), this.y - (x * 16), this.owner, this.damage));
             }
         }
     }

@@ -25,6 +25,11 @@ class Skill extends Item {
  */
 class EnergyShot extends Skill {
     projectileSpeed = 256;
+    cost = 4;
+    baseDamage = 5;
+    get damage() {
+        return this.baseDamage;
+    }
     skillCategory = SkillCategory.Energy;
     // Perk 0 options:
     // 1 = Split shot
@@ -44,13 +49,21 @@ class EnergyShot extends Skill {
             {
                 text: "Fire a bolt of energy.",
                 fontSize: 10
+            },
+            {
+                text: "Cost: " + this.cost.toString() + "EP",
+                fontSize: 10
+            },
+            {
+                text: "Damage: " + this.damage.toString(),
+                fontSize: 10
             }
         ];
     }
     cast(player) {
-        if (player.energy - 4 >= 0) {
+        if (player.energy >= this.cost) {
             //gameEngine.addEntity()
-            let projectile = new Projectile(player.x, player.y, player, 0, 5);
+            let projectile = new Projectile(player.x, player.y, player, 0, this.damage);
             projectile.sprite = new Animator3D(ASSET_MANAGER.getAsset("./sprites/skill/energy_shot.png"), 32, 32, 4, 0.05, false, true);
             projectile.collisionSize = 4;
             projectile.onEnemyCollision = () => {
@@ -78,7 +91,7 @@ class EnergyShot extends Skill {
                     gameEngine.addEntity(projectile);
                 }
             }
-            player.energy -= 4;
+            player.energy -= this.cost;
         }
     }
 }
@@ -89,6 +102,11 @@ class EnergyShot extends Skill {
  */
 class BlastCharge extends Skill {
     skillCategory = SkillCategory.Mundane;
+    cost = 15;
+    baseDamage = 20;
+    get damage() {
+        return this.baseDamage;
+    }
     constructor() {
         super(ASSET_MANAGER.getAsset("./sprites/icon/skillcard1.png"), ASSET_MANAGER.getAsset("./sprites/icon/skill1.png"));
         this.cooldown = 4;
@@ -111,15 +129,29 @@ class BlastCharge extends Skill {
             {
                 text: "The explosion can hurt you.",
                 fontSize: 10
+            },
+            {
+                text: "Cost: " + this.cost.toString() + "EP",
+                fontSize: 10
+            },
+            {
+                text: "Damage: " + this.damage.toString(),
+                fontSize: 10
+            },
+            {
+                text: "Cooldown: " + this.cooldown.toString() + " seconds",
+                fontSize: 10
             }
         ];
     }
     cast(player) {
-        if (this.cooldownTimer <= 0) {
+        if (this.cooldownTimer <= 0 && player.energy >= this.cost) {
             let bomb = new Bomb(player.x, player.y);
             bomb.owner = player;
+            bomb.damage = this.damage;
             gameEngine.addEntity(bomb);
             this.cooldownTimer = this.cooldown / (player.cooldownMod + (player.reflex * 0.02));
+            player.energy -= this.cost;
         }
     }
 }
@@ -215,10 +247,15 @@ class EnergyBlast extends Skill {
  */
 class EnergyDisk extends Skill {
     projectileSpeed = 180;
+    cost = 8;
+    baseDamage = 8;
+    get damage() {
+        return this.baseDamage;
+    }
     skillCategory = SkillCategory.Energy;
     constructor() {
         // TODO: asset for this skillcard
-        super(ASSET_MANAGER.getAsset("./sprites/icon/skillcard1.png"), ASSET_MANAGER.getAsset("./sprites/icon/skill1.png"));
+        super(ASSET_MANAGER.getAsset("./sprites/icon/skillcard3.png"), ASSET_MANAGER.getAsset("./sprites/icon/skill3.png"));
         this.cooldown = 4;
         this.cooldownTimer = 0;
     }
@@ -231,26 +268,38 @@ class EnergyDisk extends Skill {
             {
                 text: "Launch a disk of pure energy forwards.",
                 fontSize: 10
+            },
+            {
+                text: "Ricochets off walls.",
+                fontSize: 10
+            },
+            {
+                text: "Cost: " + this.cost.toString() + "EP",
+                fontSize: 10
+            },
+            {
+                text: "Damage: " + this.damage.toString(),
+                fontSize: 10
             }
         ];
     }
     cast(player) {
-        if (this.cooldownTimer <= 0) {
+        if (this.cooldownTimer <= 0 && player.energy >= this.cost) {
             // Basically a large energy shot, bigger projectile and more damage
-            let projectile = new Projectile(player.x, player.y, player, 5, 5);
-            projectile.sprite = new Animator3D(ASSET_MANAGER.getAsset("./sprites/skill/energy_shot.png"), 32, 32, 4, 0.05, false, true);
+            let projectile = new Projectile(player.x, player.y, player, 5, this.damage);
+            projectile.sprite = new Animator(ASSET_MANAGER.getAsset("./sprites/skill/energy_disk.png"), 0, 0, 32, 32, 2, 0.05, 0, false, true);
             projectile.collisionSize = 4;
-            projectile.onEnemyCollision = () => {
-                projectile.removeFromWorld = true;
-            };
             projectile.onWallCollision = (other) => {
                 let reflectNormal = new Vector2(Math.sign(projectile.x - other.x), Math.sign(projectile.y - other.y) * 2).normalized();
                 projectile.velocity = projectile.velocity.minus(reflectNormal.scale(2 * projectile.velocity.dot(reflectNormal)));
                 projectile.x += reflectNormal.x * 5;
                 projectile.y += reflectNormal.y * 5;
+                // Reset this projectile's attacked entities list (allows for repeat hits)
+                projectile.attackedEntities = [];
             };
             projectile.velocity = gameEngine.getMousePosition().minus(new Vector2(player.x, player.y)).normalized().scale(this.projectileSpeed);
             gameEngine.addEntity(projectile);
+            player.energy -= this.cost;
         }
     }
 }

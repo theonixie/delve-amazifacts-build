@@ -27,6 +27,9 @@ class Enemy extends Character {
             // 20% chance to drop item.            
             if (Math.random() < 0.2)
                 gameEngine.addEntity(new DroppedItem(this.x, this.y, ItemGenerator.generateWeapon()));
+            // 10% chance to drop a stempak.
+            if (Math.random() < 0.1)
+                gameEngine.addEntity(new DroppedStempak(this.x, this.y));
             this.removeFromWorld = true;
         }
         this.velocity = new Vector2(this.x - projectile.x, this.y - projectile.y).normalized().scale(256);

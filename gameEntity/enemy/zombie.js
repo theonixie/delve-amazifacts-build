@@ -4,6 +4,11 @@ class Zombie extends Enemy {
     static attackDelay = 0.1;
     static lostDelay = 50;
     static walkDelay = 0.1;
+    static baseDamage = 2;
+    static levelDamage = 2;
+    static get damage() {
+        return Zombie.baseDamage + (Zombie.levelDamage * gameEngine.currentFloor);
+    }
     facingDirection;
     target;
     targetDirection;
@@ -28,7 +33,7 @@ class Zombie extends Enemy {
         this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/zombie/attack.png"), 64, 64, 8, 0.05, false, false);
         this.attackSwingAnim.elapsedTime = this.attackSwingAnim.totalTime; // Make the animation start in it's finished state.
         this.shadowSprite = ASSET_MANAGER.getAsset("./sprites/vfx/shadow.png");
-        this.slashBehavior = new SlashingNodes(this, Zombie.attackDelay);
+        this.slashBehavior = new SlashingNodes(this, Zombie.attackDelay, Zombie.damage);
         this.chaseBehavior = new ChasingNodes(this, Zombie.walkDelay, Zombie.moveSpeed, Zombie.lostDelay);
         this.slashBehavior.setExitNode(this.chaseBehavior.entryNode);
         this.chaseBehavior.setExitNode(this.slashBehavior.entryNode);

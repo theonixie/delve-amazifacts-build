@@ -31,6 +31,7 @@ class Enemy extends Character {
             if (Math.random() < 0.1)
                 gameEngine.addEntity(new DroppedStempak(this.x, this.y));
             this.removeFromWorld = true;
+            gameEngine.enemiesDefeated++;
         }
         this.velocity = new Vector2(this.x - projectile.x, this.y - projectile.y).normalized().scale(256);
         if (projectile.onEnemyCollision !== undefined)

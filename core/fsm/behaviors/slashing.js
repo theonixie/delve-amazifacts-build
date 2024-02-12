@@ -2,13 +2,15 @@ class SlashingNodes extends Behavior {
     actor;
     attackTimer = 0;
     attackDelay;
+    damage;
     attacking;
     incrementAttackTimer;
     attackTimerDone;
     closeEnough;
-    constructor(actor, attackDelay) {
+    constructor(actor, attackDelay, damage) {
         super();
         this.actor = actor;
+        this.damage = damage;
         this.attacking = new ActionNode(this.stop, "attack");
         this.attacking.animation = this.actor.attackSwingAnim;
         this.attacking.setup = this.startingAttack;
@@ -30,7 +32,7 @@ class SlashingNodes extends Behavior {
         this.actor.attackSwingAnim.elapsedTime = 0;
         this.attackTimer = 0;
         let attackDirection = this.actor.targetDirection.normalized();
-        let projectile = new Projectile(this.actor.x + (attackDirection.x * 16), this.actor.y + (attackDirection.y * 16), this.actor, 0.05, 2);
+        let projectile = new Projectile(this.actor.x + (attackDirection.x * 16), this.actor.y + (attackDirection.y * 16), this.actor, 0.05, this.damage);
         gameEngine.addEntity(projectile);
     };
     stop = () => {
