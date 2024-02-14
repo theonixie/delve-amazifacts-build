@@ -72,6 +72,11 @@ class Hud extends HudEntity {
         if (this.hero.heldStemkit !== null) {
             ctx.fillText(this.hero.heldStemkit.charges.toString(), 278, 324);
         }
+        if (this.hero.statPoints > 0) {
+            ctx.font = "bold 10px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText("You have unspent skill points! ([C] Open Character Menu)", 300, 300);
+        }
         if (Input.mouse.x > 826 && Input.mouse.x < 890 && Input.mouse.y > 702 && Input.mouse.y < 768) {
             gameEngine.drawTooltip([{ text: "Open Inventory", fontSize: 10 }]);
         }
