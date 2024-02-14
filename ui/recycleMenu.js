@@ -66,23 +66,31 @@ class RecycleMenu extends HudEntity {
             // Draw the background first
             ctx.drawImage(this.backgroundSprite, 0, 0);
             ctx.fillStyle = "black";
-            ctx.fillRect(32, 32, 48, 72);
-            ctx.fillRect(32, 128, 48, 72);
-            ctx.fillRect(32, 224, 48, 72);
+            ctx.fillRect(32, 64, 48, 72);
+            ctx.fillRect(112, 64, 48, 72);
+            ctx.fillRect(192, 64, 48, 72);
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.font = "32px monospace";
+            ctx.fillText("+", 96, 108);
+            ctx.fillText("=", 176, 108);
+            ctx.textAlign = "left";
+            ctx.font = "10px monospace";
+            ctx.fillText("Recycle two weapons to combine their powers.", 32, 150);
             if (this.slot1 !== null) {
-                ctx.drawImage(this.slot1.sprite, 32, 32);
+                ctx.drawImage(this.slot1.sprite, 32 + 12, 64);
                 if (this.hoveringSlot1()) {
                     gameEngine.tooltipArray = this.slot1.getTooltip();
                 }
             }
             if (this.slot2 !== null) {
-                ctx.drawImage(this.slot2.sprite, 32, 128);
+                ctx.drawImage(this.slot2.sprite, 112 + 12, 64);
                 if (this.hoveringSlot2()) {
                     gameEngine.tooltipArray = this.slot2.getTooltip();
                 }
             }
             if (this.result !== null) {
-                ctx.drawImage(this.result.sprite, 32, 224);
+                ctx.drawImage(this.result.sprite, 192 + 12, 64);
                 if (this.hoveringResult()) {
                     gameEngine.tooltipArray = this.result.getTooltip();
                 }
@@ -125,13 +133,13 @@ class RecycleMenu extends HudEntity {
         this.result = newItem;
     }
     hoveringSlot1() {
-        return (Input.mouse.x > 32 && Input.mouse.x < 32 + 48 && Input.mouse.y > 32 && Input.mouse.y < 32 + 72);
+        return (Input.mouse.x > 32 && Input.mouse.x < 32 + 48 && Input.mouse.y > 64 && Input.mouse.y < 64 + 72);
     }
     hoveringSlot2() {
-        return (Input.mouse.x > 32 && Input.mouse.x < 32 + 48 && Input.mouse.y > 128 && Input.mouse.y < 128 + 72);
+        return (Input.mouse.x > 112 && Input.mouse.x < 112 + 48 && Input.mouse.y > 64 && Input.mouse.y < 64 + 72);
     }
     hoveringResult() {
-        return (Input.mouse.x > 32 && Input.mouse.x < 32 + 48 && Input.mouse.y > 224 && Input.mouse.y < 224 + 72);
+        return (Input.mouse.x > 192 && Input.mouse.x < 192 + 48 && Input.mouse.y > 64 && Input.mouse.y < 64 + 72);
     }
 }
 //# sourceMappingURL=recycleMenu.js.map

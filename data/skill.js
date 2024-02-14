@@ -4,6 +4,9 @@ class Skill extends Item {
     // Set to the cooldown time when activated.
     // Can only cast skill when cooldownTimer is <= 0.
     cooldownTimer;
+    // Energy cost of this skill.
+    // Defaults to 0.
+    cost = 0;
     skillCategory;
     // TODO: skillcategory to group different skills together
     // If a perk slot is 0, then it has no effect.
@@ -196,10 +199,11 @@ class EnergyClaw extends Skill {
  */
 class EnergyBlast extends Skill {
     projectileSpeed = 256;
+    cost = 12;
     skillCategory = SkillCategory.Energy;
     constructor() {
         // Needs its own asset
-        super(ASSET_MANAGER.getAsset("./sprites/icon/skillcard1.png"), ASSET_MANAGER.getAsset("./sprites/icon/skill1.png"));
+        super(ASSET_MANAGER.getAsset("./sprites/icon/skillcard4.png"), ASSET_MANAGER.getAsset("./sprites/icon/skill4.png"));
         this.cooldown = 1;
         this.cooldownTimer = 0;
     }
@@ -216,7 +220,7 @@ class EnergyBlast extends Skill {
         ];
     }
     cast(player) {
-        if (player.energy - 12 >= 0) {
+        if (player.energy >= this.cost) {
             let adj = 0;
             // If upgraded, add two more random projectiles
             if (this.perk0 == 1) {
@@ -236,7 +240,7 @@ class EnergyBlast extends Skill {
                 projectile.velocity = gameEngine.getMousePosition().minus(new Vector2(player.x, player.y)).normalized().scale(this.projectileSpeed).rotated(random);
                 gameEngine.addEntity(projectile);
             }
-            player.energy -= 12;
+            player.energy -= this.cost;
         }
     }
 }

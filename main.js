@@ -1,12 +1,16 @@
 const gameEngine = new GameEngine();
 const ASSET_MANAGER = new AssetManager();
-//ASSET_MANAGER.queueDownload("./path/to/image.png");
+// ASSET_MANAGER.queueDownload("./path/to/image.png");
 // BACKGROUNDS
 ASSET_MANAGER.queueDownload("./sprites/background/cave.png");
 // ENEMIES
 ASSET_MANAGER.queueDownload("./sprites/enemy/sandbag/stand.png");
 ASSET_MANAGER.queueDownload("./sprites/enemy/zombie/walk.png");
 ASSET_MANAGER.queueDownload("./sprites/enemy/zombie/attack.png");
+ASSET_MANAGER.queueDownload("./sprites/enemy/zombie/buildup.png");
+ASSET_MANAGER.queueDownload("./sprites/enemy/zombie/lunge.png");
+ASSET_MANAGER.queueDownload("./sprites/enemy/zombie/lungewind.png");
+ASSET_MANAGER.queueDownload("./sprites/enemy/zombie/getup.png");
 ASSET_MANAGER.queueDownload("./sprites/enemy/slime/walk.png");
 ASSET_MANAGER.queueDownload("./sprites/enemy/slime/attack.png");
 // PLAYER
@@ -18,7 +22,7 @@ ASSET_MANAGER.queueDownload("./sprites/hero/mine.png");
 ASSET_MANAGER.queueDownload("./sprites/hero/skill_shoot.png");
 // ICONS
 // Set this for-loop to match the number of in-game skills.
-for (let i = 0; i < 4; i++) {
+for (let i = 0; i < 5; i++) {
     ASSET_MANAGER.queueDownload("./sprites/icon/skill" + i.toString() + ".png");
     ASSET_MANAGER.queueDownload("./sprites/icon/skillcard" + i.toString() + ".png");
 }
@@ -30,6 +34,7 @@ ASSET_MANAGER.queueDownload("./sprites/outpost/squire.png");
 ASSET_MANAGER.queueDownload("./sprites/outpost/tarren.png");
 ASSET_MANAGER.queueDownload("./sprites/outpost/house_tarren.png");
 ASSET_MANAGER.queueDownload("./sprites/outpost/house_squire.png");
+ASSET_MANAGER.queueDownload("./sprites/outpost/campfire.png");
 // SKILLS
 ASSET_MANAGER.queueDownload("./sprites/skill/bomb.png");
 ASSET_MANAGER.queueDownload("./sprites/skill/energy_shot.png");
@@ -69,6 +74,7 @@ ASSET_MANAGER.queueDownload("./sounds/footstep0.wav");
 ASSET_MANAGER.queueDownload("./sounds/footstep1.wav");
 ASSET_MANAGER.queueDownload("./sounds/footstep2.wav");
 ASSET_MANAGER.queueDownload("./sounds/stemkit_use.wav");
+ASSET_MANAGER.queueDownload("./sounds/full_restore.wav");
 ASSET_MANAGER.queueDownload("./sounds/block_break.wav");
 // The function given as a parameter to this method call will be executed once
 // all assets have been loaded. In this case, we want the game to start.

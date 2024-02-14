@@ -57,21 +57,28 @@ class DecisionNode extends ProcessNode {
         }, name);
     }
 }
+class MultiDecisionNode extends ProcessNode {
+    nodes;
+    constructor(decision, name) {
+        super(function () {
+            this.next = this.nodes[decision()];
+        }, name);
+    }
+}
 class ActionNode extends ProcessNode {
+    constructor(action, state, name) {
+        super(action, name);
+        this.state = state;
+    }
     process = function () {
         if (this.isFirstFrame) {
             this.eventualNext = this.next;
             this.next = this;
             this.setup && this.setup();
         }
-        if (this.do && this.do() == false) {
-            this.takedown && this.takedown();
-            this.next = this.eventualNext;
-            this.isFirstFrame = true;
-            return;
-        }
-        // If there is no animation, or the animation is done, finish the action.
-        if (!this.animation || (this.animation && this.animation.isDone())) {
+        // If the action returns false, or the animation is done, stop the action.
+        // If there is no animation, and the action returned something other than false, it should continue
+        if ((this.do && this.do() != true) || (this.animation && this.animation.isDone())) {
             this.takedown && this.takedown();
             this.next = this.eventualNext;
             this.isFirstFrame = true;
@@ -85,6 +92,7 @@ class ActionNode extends ProcessNode {
     takedown;
     isFirstFrame = true;
     eventualNext;
+    state;
     animation;
 }
 //# sourceMappingURL=fsm.js.map

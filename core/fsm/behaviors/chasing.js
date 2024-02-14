@@ -20,15 +20,13 @@ class ChasingNodes extends Behavior {
         this.walkDelay = walkDelay;
         this.moveSpeed = moveSpeed;
         this.lostDelay = lostDelay;
-        this.idle = new ActionNode(this.stop, "idle");
-        this.walkingToTarget = new ActionNode(this.walkToTarget, "walk to target");
-        this.walkingToWaypoint = new ActionNode(this.walkToWaypoint, "walk to waypoint");
+        this.idle = new ActionNode(this.stop, State.STANDING, "idle");
+        this.walkingToTarget = new ActionNode(this.walkToTarget, State.WALKING, "walk to target");
+        this.walkingToWaypoint = new ActionNode(this.walkToWaypoint, State.WALKING, "walk to waypoint");
         this.directPath = new DecisionNode(this.directPathExists, "direct path");
         this.lostPlayer = new DecisionNode(this.hasLostPlayer, "lost player");
         this.pathfind = new DecisionNode(this.usePath, "path");
         this.walkTimerDone = new DecisionNode(() => { return this.walkingTimer >= this.walkDelay; }, "walk timer done");
-        this.walkingToTarget.takedown = this.updateFacingDirection;
-        this.walkingToWaypoint.takedown = this.updateFacingDirection;
         this.idle.next = this.directPath;
         this.directPath.yes = this.walkingToTarget;
         this.directPath.no = this.lostPlayer;
@@ -66,12 +64,6 @@ class ChasingNodes extends Behavior {
             }
         }
         return true;
-    };
-    updateFacingDirection = () => {
-        if (this.actor.velocity.x !== 0 || this.actor.velocity.y !== 0) {
-            let angleRad = Math.atan2(-this.actor.velocity.x, this.actor.velocity.y);
-            this.actor.facingDirection = Math.round(((360 + (180 * angleRad / Math.PI)) % 360) / 22.5) % 16;
-        }
     };
     stop = () => {
         this.actor.velocity = new Vector2(0, 0);

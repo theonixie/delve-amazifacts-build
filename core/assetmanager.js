@@ -75,9 +75,10 @@ class AssetManager {
         return this.cache[path];
     }
     ;
-    playAsset(path) {
+    playAsset(path, volume = 1) {
         let audio = this.cache[path];
         audio.currentTime = 0;
+        audio.volume = volume;
         audio.play();
     }
     ;

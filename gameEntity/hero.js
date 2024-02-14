@@ -95,8 +95,8 @@ class Hero extends Character {
     }
     set mineSpeedMod(value) {
         this.#mineSpeedMod = value;
-        this.mineAnim.frameDuration = 0.05 / (1 + this.#mineSpeedMod);
-        this.mineAnim.totalTime = this.mineAnim.frameDuration * this.mineAnim.frameCount;
+        this.mineAnim.duration = 0.05 / (1 + this.#mineSpeedMod);
+        this.mineAnim.totalTime = this.mineAnim.duration * this.mineAnim.frameCount;
     }
     heldWeapon;
     heldStemkit;
@@ -140,15 +140,15 @@ class Hero extends Character {
         this.health = this.maxHealth;
         this.energy = this.maxEnergy;
         this.state = PlayerState.Normal;
-        // Create a test weapon.
-        this.heldWeapon = new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon/sword0.png"));
-        // Create a test stemkit.
-        this.heldStemkit = new Stemkit(15, 3, ASSET_MANAGER.getAsset("./sprites/icon/stemkit.png"));
         this.onEnemyHurt = [];
         this.heldSkills = [];
         for (let i = 0; i < 4; i++) {
             this.heldSkills.push(null);
         }
+        // Create a test weapon.
+        this.equipWeapon(ItemGenerator.generateWeapon());
+        // Create a test stemkit.
+        this.heldStemkit = new Stemkit(15, 3, ASSET_MANAGER.getAsset("./sprites/icon/stemkit.png"));
     }
     ;
     update() {
@@ -162,10 +162,7 @@ class Hero extends Character {
                 this.y = 0;
                 this.dead = false;
                 this.respawnTimer = 0;
-                this.health = this.maxHealth;
-                if (this.heldStemkit) {
-                    this.heldStemkit.charges = this.heldStemkit.capacity;
-                }
+                this.fullRestore();
             }
             return; // Don't run any of the other code while we're dead.
         }
@@ -323,18 +320,22 @@ class Hero extends Character {
         let mouseClick = gameEngine.getMousePosition().minus(new Vector2(this.x, this.y)).normalized();
         this.state = PlayerState.Attacking;
         this.attackSwingAnim.elapsedTime = 0;
+        let projectile;
         // Only attack if we are holding a weapon.
         // TODO: Add attack for if the player is holding no weapon.
         if (this.heldWeapon !== null) {
-            let projectile = new Projectile(this.x + (mouseClick.x * 16), this.y + (mouseClick.y * 16), this, 0.05, Math.floor(this.power * 0.5) + Math.floor((Math.random() * (this.heldWeapon.damageMax - this.heldWeapon.damageMin + 1)) + this.heldWeapon.damageMin));
-            projectile.onEnemyCollision = (enemy) => {
-                projectile.owner.gainEnergy(2);
-                for (let i = 0; i < this.onEnemyHurt.length; i++) {
-                    this.onEnemyHurt[i](this, enemy, projectile);
-                }
-            };
-            gameEngine.addEntity(projectile);
+            projectile = new Projectile(this.x + (mouseClick.x * 16), this.y + (mouseClick.y * 16), this, 0.05, Math.floor(this.power * 0.5) + Math.floor((Math.random() * (this.heldWeapon.damageMax - this.heldWeapon.damageMin + 1)) + this.heldWeapon.damageMin));
         }
+        else {
+            projectile = new Projectile(this.x + (mouseClick.x * 16), this.y + (mouseClick.y * 16), this, 0.05, Math.floor(this.power * 0.5) + Math.floor((Math.random() * 2)));
+        }
+        projectile.onEnemyCollision = (enemy) => {
+            projectile.owner.gainEnergy(2);
+            for (let i = 0; i < this.onEnemyHurt.length; i++) {
+                this.onEnemyHurt[i](this, enemy, projectile);
+            }
+        };
+        gameEngine.addEntity(projectile);
     }
     castSkill(skillIndex) {
         if (this.heldSkills[skillIndex] !== null) {
@@ -346,6 +347,7 @@ class Hero extends Character {
         if (this.experiencePoints >= (this.level + 1) * 100) {
             this.level++;
             this.statPoints += 3;
+            this.fullRestore();
         }
     }
     gainEnergy(amount) {
@@ -387,6 +389,16 @@ class Hero extends Character {
         }
         this.velocity = new Vector2(this.x - projectile.x, this.y - projectile.y).normalized().scale(256);
     }
+    /** Sets the player's HP and EP to their maximum and, if they have one, refills their stemkit.
+        Used by the campfire and when coming back from death. */
+    fullRestore() {
+        this.health = this.maxHealth;
+        this.energy = this.maxEnergy;
+        if (this.heldStemkit) {
+            this.heldStemkit.charges = this.heldStemkit.capacity;
+        }
+        ASSET_MANAGER.playAsset("./sounds/full_restore.wav");
+    }
     draw(ctx) {
         if (this.dead)
             return; // Don't draw anything if we are dead.
@@ -404,11 +416,11 @@ class Hero extends Character {
         else if (this.velocity.x != 0 || this.velocity.y != 0) {
             this.runAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
             if (this.runAnim.currentFrame() >= 7 && this.footstepSfxCounter == 0) {
-                ASSET_MANAGER.playAsset(this.footstepSfx[Math.floor(Math.random() * this.footstepSfx.length)]);
+                ASSET_MANAGER.playAsset(this.footstepSfx[Math.floor(Math.random() * this.footstepSfx.length)], 0.2);
                 this.footstepSfxCounter = 1;
             }
             else if (this.runAnim.currentFrame() >= 15 && this.footstepSfxCounter == 1) {
-                ASSET_MANAGER.playAsset(this.footstepSfx[Math.floor(Math.random() * this.footstepSfx.length)]);
+                ASSET_MANAGER.playAsset(this.footstepSfx[Math.floor(Math.random() * this.footstepSfx.length)], 0.2);
                 this.footstepSfxCounter = 2;
             }
             else if (this.runAnim.currentFrame() < 7 && this.footstepSfxCounter == 2) {

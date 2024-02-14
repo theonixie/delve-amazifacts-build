@@ -79,11 +79,13 @@ class TitleScreen extends HudEntity {
         // for(let i = 0; i < 5; i++)
         //     gameEngine.addEntity(new DroppedItem(-60, 4000, ItemGenerator.generateWeapon()));
         gameEngine.addEntity(selectedItem);
+        // gameEngine.addEntity(new Zombie(-80, 4060))
         // Outpost stuff
         gameEngine.addEntity(new Squire(-1064, -90));
         gameEngine.addEntity(new Tarren(-1256, -90));
         gameEngine.addEntity(new House(-1320, -128, 0));
         gameEngine.addEntity(new House(-1000, -128, 1));
+        gameEngine.addEntity(new Campfire(-1160, 0));
         gameEngine.addEntity(new Barrier(-680, -200));
         gameEngine.addEntity(new Barrier(-1640, -200));
         gameEngine.addEntity(new Barrier(-680, 280));

@@ -1,6 +1,7 @@
 class Slime extends Enemy {
     static moveSpeed = 30;
-    static attackDelay = 0.1;
+    static slashDelay = 0.15;
+    static slashTime = 0.75;
     static lostDelay = 50;
     static walkDelay = 0.1;
     static baseDamage = 2;
@@ -29,10 +30,10 @@ class Slime extends Enemy {
         this.target = gameEngine.globalEntities.get("hero");
         this.standAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/slime/walk.png"), 64, 64, 1, 0.08, false, true);
         this.runAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/slime/walk.png"), 64, 64, 12, 0.08, false, true);
-        this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/slime/attack.png"), 64, 64, 9, 0.05, false, false);
+        this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/slime/attack.png"), 64, 64, 9, Slime.slashTime, false, false, false);
         this.attackSwingAnim.elapsedTime = this.attackSwingAnim.totalTime; // Make the animation start in it's finished state.
         this.shadowSprite = ASSET_MANAGER.getAsset("./sprites/vfx/shadow.png");
-        this.slashBehavior = new SlashingNodes(this, Zombie.attackDelay, Slime.damage);
+        this.slashBehavior = new SlashingNodes(this, Slime.slashDelay, Slime.damage);
         this.chaseBehavior = new ChasingNodes(this, Zombie.walkDelay, Zombie.moveSpeed, Zombie.lostDelay);
         this.slashBehavior.setExitNode(this.chaseBehavior.entryNode);
         this.chaseBehavior.setExitNode(this.slashBehavior.entryNode);
@@ -41,19 +42,22 @@ class Slime extends Enemy {
     ;
     before = () => {
         this.targetDirection = new Vector2(this.target.x - this.x, this.target.y - this.y);
-        this.chaseBehavior.before();
+        this.chaseBehavior.before && this.chaseBehavior.before();
+        this.slashBehavior.before && this.slashBehavior.before();
     };
     after = () => {
         this.checkCollision();
         this.x += this.velocity.x * gameEngine.clockTick;
         this.y += this.velocity.y * gameEngine.clockTick;
+        this.chaseBehavior.after && this.chaseBehavior.after();
+        this.slashBehavior.after && this.slashBehavior.after();
     };
     update = () => {
         this.ai.update();
     };
     draw(ctx) {
         ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
-        if (this.ai.lastActionNode?.name == "attack") {
+        if (this.ai.lastActionNode?.name == "attacking") {
             this.attackSwingAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 24, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         }
         else if (this.velocity.x !== 0 || this.velocity.y !== 0) {
@@ -76,5 +80,12 @@ class Slime extends Enemy {
         }
     }
     ;
+    onProjectileCollision(projectile) {
+        super.onProjectileCollision(projectile);
+        if (projectile.owner instanceof Enemy) {
+            return;
+        }
+        this.chaseBehavior.lostTimer = 0;
+    }
 }
 //# sourceMappingURL=slime.js.map

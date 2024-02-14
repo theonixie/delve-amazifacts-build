@@ -1,12 +1,23 @@
 class Animator3D {
-    constructor(spritesheet, width, height, frameCount, frameDuration, reverse, loop) {
+    spritesheet;
+    reverse;
+    loop;
+    frameCount;
+    duration;
+    elapsedTime;
+    totalTime;
+    width;
+    height;
+    isFrameDuration;
+    constructor(spritesheet, width, height, frameCount, duration, reverse, loop, isFrameDuration = true) {
         Object.assign(this, { spritesheet, reverse, loop });
         this.frameCount = frameCount;
-        this.frameDuration = frameDuration;
+        this.duration = duration;
         this.elapsedTime = 0;
-        this.totalTime = this.frameCount * this.frameDuration;
+        this.totalTime = isFrameDuration ? duration * frameCount : duration;
         this.width = width;
         this.height = height;
+        this.isFrameDuration = isFrameDuration;
     }
     ;
     drawFrame(ctx, x, y, scale, facingDirection) {
@@ -34,7 +45,12 @@ class Animator3D {
         // If the current frame goes beyond the final frame, limit it to the final frame.
         // Prevents situations where the game renders no animation for a single frame without
         // isDone() becoming true.
-        return Math.min(Math.floor(this.elapsedTime / this.frameDuration), this.frameCount - 1);
+        if (this.isFrameDuration) {
+            return Math.min(Math.floor(this.elapsedTime / this.duration), this.frameCount - 1);
+        }
+        else {
+            return Math.min(Math.floor(this.elapsedTime / this.duration * this.frameCount), this.frameCount - 1);
+        }
     }
     ;
     isDone() {

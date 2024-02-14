@@ -55,6 +55,12 @@ class Hud extends HudEntity {
                     ctx.font = "bold 32px monospace";
                     ctx.fillText(Math.ceil(this.hero.heldSkills[i].cooldownTimer).toString(), 228 + (i * 48), 386);
                 }
+                if (this.hero.energy < this.hero.heldSkills[i].cost) {
+                    ctx.fillStyle = "black";
+                    ctx.globalAlpha = 0.4;
+                    ctx.fillRect(204 + (i * 48), 352, 48, 48);
+                    ctx.globalAlpha = 1;
+                }
             }
         }
         ctx.drawImage(this.hudOverlaySpritesheet, 0, 0, 600, 96, 0, 304, 600, 96);

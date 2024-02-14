@@ -4,33 +4,45 @@ class SlashingNodes extends Behavior {
     attackDelay;
     damage;
     attacking;
-    incrementAttackTimer;
-    attackTimerDone;
     closeEnough;
+    buildingUp;
+    buildUpTimer = 0;
+    buildUpDelay;
     constructor(actor, attackDelay, damage) {
         super();
         this.actor = actor;
         this.damage = damage;
-        this.attacking = new ActionNode(this.stop, "attack");
+        this.buildUpDelay = attackDelay;
+        this.attacking = new ActionNode(this.attack, State.SLASH, "attacking");
         this.attacking.animation = this.actor.attackSwingAnim;
         this.attacking.setup = this.startingAttack;
-        this.incrementAttackTimer = new ActionNode(() => { this.attackTimer += gameEngine.clockTick; }, "decrement attack timer");
-        this.incrementAttackTimer.setup = this.stop;
-        this.attackTimerDone = new DecisionNode(() => { return this.attackTimer >= attackDelay; }, "attack timer done");
-        this.closeEnough = new DecisionNode(this.isCloseEnough);
-        this.closeEnough.yes = this.attackTimerDone;
-        this.attackTimerDone.yes = this.attacking;
-        this.attackTimerDone.no = this.incrementAttackTimer;
-        this.incrementAttackTimer.next = this.closeEnough;
-        this.attacking.next = this.closeEnough;
+        this.closeEnough = new DecisionNode(() => { return this.actor.targetDirection.magnitude() <= this.actor.collisionSize * 2 + 21; }, "close enough to slash?");
+        this.buildingUp = new ActionNode(this.buildUp, State.WIND_SLASH, "building up slash");
+        this.buildingUp.setup = this.startingWindUp;
+        this.closeEnough.yes = this.buildingUp;
+        this.buildingUp.next = this.attacking;
         this.entryNode = this.closeEnough;
     }
     setExitNode = (node) => {
+        this.attacking.next = node;
         this.closeEnough.no = node;
+    };
+    startingWindUp = () => {
+        if (this.actor.buildUpAnim) {
+            this.actor.buildUpAnim.elapsedTime = 0;
+        }
+    };
+    buildUp = () => {
+        this.buildUpTimer += gameEngine.clockTick;
+        this.actor.velocity = new Vector2(0, 0);
+        if (this.buildUpTimer >= this.buildUpDelay) {
+            this.buildUpTimer = 0;
+            return false;
+        }
+        return true;
     };
     startingAttack = () => {
         this.actor.attackSwingAnim.elapsedTime = 0;
-        this.attackTimer = 0;
         let attackDirection = this.actor.targetDirection.normalized();
         let projectile = new Projectile(this.actor.x + (attackDirection.x * 16), this.actor.y + (attackDirection.y * 16), this.actor, 0.05, this.damage);
         gameEngine.addEntity(projectile);
@@ -38,14 +50,9 @@ class SlashingNodes extends Behavior {
     stop = () => {
         this.actor.velocity = new Vector2(0, 0);
     };
-    isCloseEnough = () => {
-        // Collision size equation should work for all sizes, assumes hero's hitbox is 16 wide in one direction.
-        if (this.actor.targetDirection.magnitude() <= this.actor.collisionSize * 2 + 17) {
-            return true;
-        }
-        else {
-            this.attackTimer = 0;
-        }
+    attack = () => {
+        this.actor.velocity = new Vector2(0, 0);
+        return true;
     };
 }
 //# sourceMappingURL=slashing.js.map

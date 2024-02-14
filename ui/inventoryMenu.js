@@ -92,8 +92,10 @@ class InventoryMenu extends HudEntity {
                     if (this.selectedItem.item === null) {
                         if (this.hoveringInventory()) {
                             let hoveredItem = this.getHoveredInventoryItem();
+                            if (hoveredItem === null) {
+                            }
                             // If it's a weapon, equip it / swap with equipped.
-                            if (hoveredItem.associatedItem instanceof Weapon) {
+                            else if (hoveredItem.associatedItem instanceof Weapon) {
                                 let previousWeapon = this.player.heldWeapon;
                                 if (this.player.heldWeapon !== null) {
                                     this.player.unequipWeapon();
