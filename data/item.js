@@ -166,8 +166,65 @@ class MineSpeedModifier extends ItemModifier {
         };
     }
 }
+class EnergyRestoreModifier extends ItemModifier {
+    constructor(rank) {
+        super();
+        this.maxRank = 4;
+        this.setRank(rank);
+    }
+    setRank(rank) {
+        this.rank = Math.min(rank, this.maxRank);
+        let energyEffect = (owner) => {
+            owner.gainEnergy(this.rank * 3);
+        };
+        this.onEquip = (hero) => { hero.onStemkitUsed.push(energyEffect); };
+        this.onUnequip = (hero) => { hero.onStemkitUsed.splice(hero.onStemkitUsed.indexOf(energyEffect), 1); };
+        this.tooltip = {
+            text: "Restore " + (this.rank * 3).toString() + " energy when used [" + ("★".repeat(this.rank)) + ("☆".repeat(this.maxRank - this.rank)) + "]",
+            fontSize: 10
+        };
+    }
+}
+class CapacityModifier extends ItemModifier {
+    constructor(rank) {
+        super();
+        this.maxRank = 3;
+        this.setRank(rank);
+    }
+    setRank(rank) {
+        this.rank = Math.min(rank, this.maxRank);
+        this.onEquip = (hero) => { hero.heldStemkit.capacity += this.rank; };
+        this.onUnequip = (hero) => { hero.heldStemkit.capacity -= this.rank; };
+        this.tooltip = {
+            text: "+" + (this.rank).toString() + " capacity when equipped [" + ("★".repeat(this.rank)) + ("☆".repeat(this.maxRank - this.rank)) + "]",
+            fontSize: 10
+        };
+    }
+}
+class ChanceRefundModifier extends ItemModifier {
+    constructor(rank) {
+        super();
+        this.maxRank = 2;
+        this.setRank(rank);
+    }
+    setRank(rank) {
+        this.rank = Math.min(rank, this.maxRank);
+        let refundEffect = (owner) => {
+            if (Math.random() < (this.rank * 0.25)) {
+                owner.heldStemkit.charges += 1;
+            }
+        };
+        this.onEquip = (hero) => { hero.onStemkitUsed.push(refundEffect); };
+        this.onUnequip = (hero) => { hero.onStemkitUsed.splice(hero.onStemkitUsed.indexOf(refundEffect), 1); };
+        this.tooltip = {
+            text: (this.rank * 25).toString() + "% chance to not consume on use [" + ("★".repeat(this.rank)) + ("☆".repeat(this.maxRank - this.rank)) + "]",
+            fontSize: 10
+        };
+    }
+}
 const ItemGenerator = class {
     static weaponModifiers;
+    static stemkitModifiers;
     static initializeModifiers() {
         this.weaponModifiers = [];
         this.weaponModifiers.push(IntegrityUpModifier);
@@ -178,6 +235,10 @@ const ItemGenerator = class {
         this.weaponModifiers.push(MaxDamageModifier);
         this.weaponModifiers.push(CooldownModifier);
         this.weaponModifiers.push(MineSpeedModifier);
+        this.stemkitModifiers = [];
+        this.stemkitModifiers.push(EnergyRestoreModifier);
+        this.stemkitModifiers.push(CapacityModifier);
+        this.stemkitModifiers.push(ChanceRefundModifier);
     }
     static generateWeapon() {
         let weapon = new Weapon(2, 4, 1, 3, ASSET_MANAGER.getAsset("./sprites/icon/sword0.png"));
@@ -196,6 +257,22 @@ const ItemGenerator = class {
             weapon.modifiers.push(new modifierOptions[i](1));
         }
         return weapon;
+    }
+    static generateStemkit() {
+        let stemkit = new Stemkit(15, 3, ASSET_MANAGER.getAsset("./sprites/icon/stemkit.png"));
+        stemkit.modifiers = [];
+        let modifierOptions = [...this.stemkitModifiers].sort((a, b) => { return Math.random() - 0.5; });
+        let totalOptionsTaken;
+        // Random distribution: 10% chance for 3 modifiers, 30% chance for 2, 60% chance for 1.
+        let rngResult = Math.random();
+        if (rngResult < 0.4)
+            totalOptionsTaken = 2;
+        else
+            totalOptionsTaken = 1;
+        for (let i = 0; i < totalOptionsTaken; i++) {
+            stemkit.modifiers.push(new modifierOptions[i](1));
+        }
+        return stemkit;
     }
 };
 //# sourceMappingURL=item.js.map

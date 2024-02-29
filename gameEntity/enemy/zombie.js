@@ -4,9 +4,6 @@ class Zombie extends Enemy {
     static walkDelay = 0.1;
     static baseDamage = 2;
     static levelDamage = 2;
-    static get damage() {
-        return Zombie.baseDamage + (Zombie.levelDamage * gameEngine.currentFloor);
-    }
     static lungeDelay = 1.5;
     static lungeBuildUp = 0.5;
     static lungeTime = 0.6;
@@ -110,7 +107,7 @@ class Zombie extends Enemy {
                 animator = this.standAnim;
                 break;
         }
-        animator.drawFrame(ctx, this.x - gameEngine.camera.x - 24, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
+        animator.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         if (params.drawColliders) {
             ctx.lineWidth = 4;
             ctx.strokeStyle = "green";

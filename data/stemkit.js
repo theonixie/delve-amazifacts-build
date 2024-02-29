@@ -12,7 +12,7 @@ class Stemkit extends Item {
     getTooltip() {
         let tooltipArray = [];
         tooltipArray.push({
-            text: "Test Stemkit",
+            text: "Stemkit",
             fontSize: 16
         });
         tooltipArray.push({
@@ -23,6 +23,11 @@ class Stemkit extends Item {
             text: "Capacity: " + this.capacity,
             fontSize: 12
         });
+        if (this.modifiers !== null) {
+            this.modifiers.forEach((element) => {
+                tooltipArray.push(element.tooltip);
+            });
+        }
         return tooltipArray;
     }
 }

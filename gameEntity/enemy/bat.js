@@ -1,4 +1,4 @@
-class Slime extends Enemy {
+class Bat extends Enemy {
     static moveSpeed = 30;
     static slashDelay = 0.15;
     static slashTime = 0.75;
@@ -25,9 +25,9 @@ class Slime extends Enemy {
         this.velocity = new Vector2(0, 0);
         this.facingDirection = 0;
         this.target = gameEngine.globalEntities.get("hero");
-        this.standAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/slime/walk.png"), 64, 64, 1, 0.08, false, true);
-        this.runAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/slime/walk.png"), 64, 64, 12, 0.08, false, true);
-        this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/slime/attack.png"), 64, 64, 9, Slime.slashTime, false, false, false);
+        this.standAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/bat/walk.png"), 64, 64, 9, 0.08, false, true);
+        this.runAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/bat/walk.png"), 64, 64, 9, 0.08, false, true);
+        this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/bat/walk.png"), 64, 64, 9, Bat.slashTime, false, false, false);
         this.attackSwingAnim.elapsedTime = this.attackSwingAnim.totalTime; // Make the animation start in it's finished state.
         this.shadowSprite = ASSET_MANAGER.getAsset("./sprites/vfx/shadow.png");
         this.slashBehavior = new SlashingNodes(this, Slime.slashDelay, Slime.damage);
@@ -94,4 +94,4 @@ class Slime extends Enemy {
         this.chaseBehavior.lostTimer = 0;
     }
 }
-//# sourceMappingURL=slime.js.map
+//# sourceMappingURL=bat.js.map

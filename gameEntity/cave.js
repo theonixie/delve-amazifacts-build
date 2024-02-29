@@ -212,7 +212,19 @@ class Cave extends GameEntity {
                 }
                 // Have a slight chance to generate a monster on this tile. Currently just a sandbag; add more monsters later!
                 if (Math.random() < 0.1) {
-                    let monster = new (Math.random() < 0.5 ? Zombie : Slime)((32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
+                    //let monster = new (Math.random() < 0.5 ? Zombie : Slime)((32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
+                    let monsterType;
+                    let choiceValue = Math.random();
+                    if (choiceValue < 0.33) {
+                        monsterType = Zombie;
+                    }
+                    else if (choiceValue < 0.66) {
+                        monsterType = Slime;
+                    }
+                    else {
+                        monsterType = Bat;
+                    }
+                    let monster = new monsterType((32 * element.x) - (32 * element.y), (16 * element.y) + (16 * element.x));
                     gameEngine.addEntity(monster);
                 }
             }

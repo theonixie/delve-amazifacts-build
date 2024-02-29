@@ -106,6 +106,11 @@ class Hero extends Character {
     * every function uses the enemy that was hit, the projectile, and the source.
     */
     onEnemyHurt;
+    /**
+    * Defines effects caused by using a stemkit.
+    * Assumes every function uses the hero.
+    */
+    onStemkitUsed;
     state;
     // How much the player has of each resource.
     // index 0 is unused since it corresponds to nothing in StoneBlock, the rest correspond to resources.
@@ -122,7 +127,7 @@ class Hero extends Character {
         this.runAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/hero/run.png"), 64, 64, 16, 0.05, false, true);
         this.dodgeAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/hero/dodge.png"), 64, 64, 13, 0.05, false, false);
         this.dodgeAnim.elapsedTime = this.dodgeAnim.totalTime; // Make the animation start in it's finished state.
-        this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/hero/attack_swing.png"), 48, 48, 10, 0.05, false, false);
+        this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/hero/attack_swing.png"), 96, 96, 8, 0.05, false, false);
         this.attackSwingAnim.elapsedTime = this.attackSwingAnim.totalTime; // Make the animation start in it's finished state.
         this.skillShootAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/hero/skill_shoot.png"), 48, 48, 11, 0.05, false, false);
         this.skillShootAnim.elapsedTime = this.skillShootAnim.totalTime; // Make the animation start in it's finished state.
@@ -141,6 +146,7 @@ class Hero extends Character {
         this.energy = this.maxEnergy;
         this.state = PlayerState.Normal;
         this.onEnemyHurt = [];
+        this.onStemkitUsed = [];
         this.heldSkills = [];
         for (let i = 0; i < 4; i++) {
             this.heldSkills.push(null);
@@ -148,7 +154,7 @@ class Hero extends Character {
         // Create a test weapon.
         this.equipWeapon(ItemGenerator.generateWeapon());
         // Create a test stemkit.
-        this.heldStemkit = new Stemkit(15, 3, ASSET_MANAGER.getAsset("./sprites/icon/stemkit.png"));
+        this.equipStemkit(ItemGenerator.generateStemkit());
     }
     ;
     update() {
@@ -263,6 +269,9 @@ class Hero extends Character {
             if (this.heldStemkit !== null && this.heldStemkit.charges > 0 && this.health < this.maxHealth) {
                 this.gainHealth(this.heldStemkit.healAmount);
                 this.heldStemkit.charges--;
+                for (let i = 0; i < this.onStemkitUsed.length; i++) {
+                    this.onStemkitUsed[i](this);
+                }
                 ASSET_MANAGER.playAsset("./sounds/stemkit_use.wav");
             }
         }
@@ -370,6 +379,20 @@ class Hero extends Character {
         });
         this.heldWeapon = null;
     }
+    equipStemkit(stemkit) {
+        this.heldStemkit = stemkit;
+        let that = this;
+        this.heldStemkit.modifiers.forEach(element => {
+            element.onEquip(that);
+        });
+    }
+    unequipStemkit() {
+        let that = this;
+        this.heldStemkit.modifiers.forEach(element => {
+            element.onUnequip(that);
+        });
+        this.heldStemkit = null;
+    }
     onProjectileCollision(projectile) {
         // Add handling for enemy projectiles here.
         if (projectile.owner instanceof Hero) {
@@ -405,7 +428,7 @@ class Hero extends Character {
         ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
         //ctx.drawImage(this.spritesheet, this.animFrame * 64, this.facingDirection * 64, 64, 64, this.x, this.y, 64, 64);
         if (!this.attackSwingAnim.isDone()) {
-            this.attackSwingAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 24, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
+            this.attackSwingAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 48, this.y - gameEngine.camera.y - 64, 1, this.facingDirection);
         }
         else if (!this.dodgeAnim.isDone()) {
             this.dodgeAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);

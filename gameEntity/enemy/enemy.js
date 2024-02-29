@@ -1,10 +1,17 @@
 class Enemy extends Character {
+    droptable;
     health;
     experiencePoints;
+    static baseDamage;
+    static levelDamage;
+    static get damage() {
+        return this.baseDamage + (this.levelDamage * gameEngine.currentFloor);
+    }
     constructor(x, y) {
         super(x, y);
         this.collisionSize = 8;
         this.removeFromWorld = false;
+        this.droptable = new BasicTable;
     }
     onProjectileCollision(projectile) {
         // If this is an enemy projectile, don't take damage.
@@ -24,12 +31,7 @@ class Enemy extends Character {
             if (projectile.owner instanceof Hero) {
                 projectile.owner.gainExperience(this.experiencePoints);
             }
-            // 20% chance to drop item.            
-            if (Math.random() < 0.2)
-                gameEngine.addEntity(new DroppedItem(this.x, this.y, ItemGenerator.generateWeapon()));
-            // 10% chance to drop a stempak.
-            if (Math.random() < 0.1)
-                gameEngine.addEntity(new DroppedStempak(this.x, this.y));
+            this.droptable.drop(this.x, this.y);
             this.removeFromWorld = true;
             gameEngine.enemiesDefeated++;
         }

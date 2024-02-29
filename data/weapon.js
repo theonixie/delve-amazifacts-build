@@ -13,7 +13,7 @@ class Weapon extends Item {
     getTooltip() {
         let tooltipArray = [];
         tooltipArray.push({
-            text: "Test Weapon",
+            text: "Weapon",
             fontSize: 16
         });
         tooltipArray.push({

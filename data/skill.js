@@ -129,10 +129,10 @@ class BlastCharge extends Skill {
                 text: "destroying blocks and hurting enemies.",
                 fontSize: 10
             },
-            {
-                text: "The explosion can hurt you.",
-                fontSize: 10
-            },
+            // {
+            //     text: "The explosion can hurt you.",
+            //     fontSize: 10
+            // },
             {
                 text: "Cost: " + this.cost.toString() + "EP",
                 fontSize: 10

@@ -13,6 +13,9 @@ ASSET_MANAGER.queueDownload("./sprites/enemy/zombie/lungewind.png");
 ASSET_MANAGER.queueDownload("./sprites/enemy/zombie/getup.png");
 ASSET_MANAGER.queueDownload("./sprites/enemy/slime/walk.png");
 ASSET_MANAGER.queueDownload("./sprites/enemy/slime/attack.png");
+ASSET_MANAGER.queueDownload("./sprites/enemy/bat/walk.png");
+ASSET_MANAGER.queueDownload("./sprites/enemy/knight/stand.png");
+ASSET_MANAGER.queueDownload("./sprites/enemy/knight/walk.png");
 // PLAYER
 ASSET_MANAGER.queueDownload("./sprites/hero/stand.png");
 ASSET_MANAGER.queueDownload("./sprites/hero/run.png");

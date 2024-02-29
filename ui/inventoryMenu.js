@@ -44,11 +44,11 @@ class InventoryMenu extends HudEntity {
                     else if (this.hoveringEquippedStemkit()) {
                         if (this.selectedItem.item === null && this.player.heldStemkit !== null) {
                             this.selectedItem.item = this.player.heldStemkit;
-                            this.player.heldStemkit = null;
+                            this.player.unequipStemkit();
                         }
                         else if (this.selectedItem.item instanceof Stemkit) {
                             if (this.player.heldStemkit === null) {
-                                this.player.heldStemkit = this.selectedItem.item;
+                                this.player.equipStemkit(this.selectedItem.item);
                                 this.selectedItem.item = null;
                             }
                         }
