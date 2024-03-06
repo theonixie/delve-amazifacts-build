@@ -398,6 +398,9 @@ class Hero extends Character {
         if (projectile.owner instanceof Hero) {
             return;
         }
+        if (this.state === PlayerState.Dodging) {
+            return;
+        }
         projectile.attackedEntities.push(this);
         let damageTaken = projectile.damage;
         this.health -= damageTaken;

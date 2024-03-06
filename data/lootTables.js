@@ -80,4 +80,40 @@ class SkillSubTable extends DropTable {
         });
     }
 }
+class CaveEnemyTable extends DropTable {
+    constructor() {
+        super();
+        this.add("Bat");
+        this.add("Slime");
+        this.add("Zombie");
+    }
+    drop(x, y, quantity = 1) {
+        let monsterlist = this.roll(quantity);
+        monsterlist.forEach(monster => {
+            let monsterType;
+            switch (monster) {
+                case "Bat": {
+                    monsterType = Bat;
+                    break;
+                }
+                case "Slime": {
+                    monsterType = Slime;
+                    break;
+                }
+                case "Zombie": {
+                    monsterType = Zombie;
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            console.log(monsterType);
+            if (monsterType != undefined) {
+                let monsterSpawned = new monsterType(x, y);
+                gameEngine.addEntity(monsterSpawned);
+            }
+        });
+    }
+}
 //# sourceMappingURL=lootTables.js.map

@@ -58,7 +58,6 @@ class SkillUpgradeMenu extends HudEntity {
                 // Only upgrade skill if both are same skill category
                 if (this.slot1 instanceof Skill && this.slot2 instanceof Skill && this.slot1.skillCategory == this.slot2.skillCategory) {
                     this.upgradeSkill(this.slot1, 0);
-                    this.slot2 = null;
                 }
             }
         };
@@ -111,12 +110,10 @@ class SkillUpgradeMenu extends HudEntity {
             }
         }
     }
-    upgradeSkill(skill, perk) {
-        if (perk == 0) {
-            skill.perk0 = 1;
-        }
-        else if (perk == 1) {
-            skill.perk1 = 1;
+    upgradeSkill(skill, tier) {
+        if (tier < 5) {
+            skill.tier += 1;
+            this.slot2 = null;
         }
     }
     hoveringSlot1() {

@@ -47,7 +47,7 @@ class Knight extends Enemy {
         this.x += this.velocity.x * gameEngine.clockTick;
         this.y += this.velocity.y * gameEngine.clockTick;
         const state = this.ai.lastActionNode.state;
-        if (state == State.WALKING && this.velocity.magnitude() > 10) {
+        if (state == State.WALK && this.velocity.magnitude() > 10) {
             let angleRad = Math.atan2(-this.velocity.x, this.velocity.y);
             this.facingDirection = Math.round(((360 + (180 * angleRad / Math.PI)) % 360) / 22.5) % 16;
         }

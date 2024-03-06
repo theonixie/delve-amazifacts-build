@@ -27,7 +27,7 @@ class LungingNodes extends Behavior {
         this.lunging = new ActionNode(this.lunge, State.LUNGE, "lunging");
         this.lunging.animation = this.actor.lungeAnim;
         this.lunging.setup = this.beginLunge;
-        this.resting = new ActionNode(this.rest, State.GETTING_UP, "getting up after lunge");
+        this.resting = new ActionNode(this.rest, State.GET_UP, "getting up after lunge");
         this.resting.animation = this.actor.getupAnim;
         this.resting.setup = this.beginRest;
         this.attackTimerDone.yes = this.buildingUp;
@@ -67,12 +67,12 @@ class LungingNodes extends Behavior {
         this.actor.lungeAnim.elapsedTime = 0;
         this.lungeDirection = this.actor.targetDirection.normalized();
         this.lungeSpeed = (2 * (this.actor.targetDirection.magnitude() - 17)) / this.lungeTime;
+        this.lungeDecay = (this.lungeSpeed / this.lungeTime);
         this.lungeSlash = new Projectile(this.actor.x + (this.lungeDirection.x * 16), this.actor.y + (this.lungeDirection.y * 16), this.actor, this.lungeTime, 4);
         gameEngine.addEntity(this.lungeSlash);
         this.lungeSlash.onWallCollision = () => {
             this.lungeSlash.removeFromWorld = true;
         };
-        this.lungeDecay = (this.lungeSpeed / this.lungeTime);
     };
     lunge = () => {
         // lungeSpeed is subtracted before and after because we are essentially taking a Riemann sum of the area under a line.

@@ -21,8 +21,10 @@ class Character extends GameEntity {
                         that.onProjectileCollision(other);
                     }
                     else if (other instanceof Character) {
+                        const bothEnemies = that instanceof Enemy && other instanceof Enemy;
+                        const scaleFactor = bothEnemies ? 16 : 64;
                         let point = new Vector2(other.x - that.x, other.y - that.y).normalized();
-                        that.velocity = that.velocity.minus(point.scale(64));
+                        that.velocity = that.velocity.minus(point.scale(scaleFactor));
                     }
                     else if (other instanceof Barrier) {
                         magnitude = thisPosition.isoMagnitude(new Vector2(other.x, other.y));

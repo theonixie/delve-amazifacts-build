@@ -8,17 +8,14 @@ class Skill extends Item {
     // Defaults to 0.
     cost = 0;
     skillCategory;
-    // TODO: skillcategory to group different skills together
     // If a perk slot is 0, then it has no effect.
     // If a perk slot is 1 or 2, then it provides an effect.
-    perk0;
-    perk1;
+    tier;
     constructor(s, i) {
         super(1, 2);
         this.sprite = s;
         this.icon = i;
-        this.perk0 = 0;
-        this.perk1 = 0;
+        this.tier = 0;
     }
 }
 /**
@@ -31,7 +28,7 @@ class EnergyShot extends Skill {
     cost = 4;
     baseDamage = 5;
     get damage() {
-        return this.baseDamage;
+        return this.baseDamage + this.tier;
     }
     skillCategory = SkillCategory.Energy;
     // Perk 0 options:
@@ -60,6 +57,10 @@ class EnergyShot extends Skill {
             {
                 text: "Damage: " + this.damage.toString(),
                 fontSize: 10
+            },
+            {
+                text: "Tier: " + this.tier.toString(),
+                fontSize: 10
             }
         ];
     }
@@ -77,23 +78,24 @@ class EnergyShot extends Skill {
             };
             projectile.velocity = gameEngine.getMousePosition().minus(new Vector2(player.x, player.y)).normalized().scale(this.projectileSpeed);
             gameEngine.addEntity(projectile);
-            if (this.perk0 == 1) {
-                // Fire two extra shots off to the sides.
-                // This for-loop will go from -1, to 1, then exit.
-                for (let i = -1; i <= 1; i += 2) {
-                    let projectile = new Projectile(player.x, player.y, player, 0, 5);
-                    projectile.sprite = new Animator3D(ASSET_MANAGER.getAsset("./sprites/skill/energy_shot.png"), 32, 32, 4, 0.05, false, true);
-                    projectile.collisionSize = 4;
-                    projectile.onEnemyCollision = () => {
-                        projectile.removeFromWorld = true;
-                    };
-                    projectile.onWallCollision = () => {
-                        projectile.removeFromWorld = true;
-                    };
-                    projectile.velocity = gameEngine.getMousePosition().minus(new Vector2(player.x, player.y)).normalized().scale(this.projectileSpeed).rotated(15 * i);
-                    gameEngine.addEntity(projectile);
-                }
-            }
+            // removed behavior as we removed perk tiers
+            // if(this.perk0 == 1) {
+            //     // Fire two extra shots off to the sides.
+            //     // This for-loop will go from -1, to 1, then exit.
+            //     for(let i = -1; i <= 1; i += 2){
+            //         let projectile = new Projectile(player.x, player.y, player, 0, 5);
+            //         projectile.sprite = new Animator3D(ASSET_MANAGER.getAsset("./sprites/skill/energy_shot.png"), 32, 32, 4, 0.05, false, true);
+            //         projectile.collisionSize = 4;
+            //         projectile.onEnemyCollision = () => {
+            //             projectile.removeFromWorld = true;
+            //         }
+            //         projectile.onWallCollision = () => {
+            //             projectile.removeFromWorld = true;
+            //         }
+            //         projectile.velocity = gameEngine.getMousePosition().minus(new Vector2(player.x, player.y)).normalized().scale(this.projectileSpeed).rotated(15 * i);
+            //         gameEngine.addEntity(projectile);
+            //     }
+            // }
             player.energy -= this.cost;
         }
     }
@@ -108,7 +110,7 @@ class BlastCharge extends Skill {
     cost = 15;
     baseDamage = 20;
     get damage() {
-        return this.baseDamage;
+        return this.baseDamage + this.tier * 4;
     }
     constructor() {
         super(ASSET_MANAGER.getAsset("./sprites/icon/skillcard1.png"), ASSET_MANAGER.getAsset("./sprites/icon/skill1.png"));
@@ -143,6 +145,10 @@ class BlastCharge extends Skill {
             },
             {
                 text: "Cooldown: " + this.cooldown.toString() + " seconds",
+                fontSize: 10
+            },
+            {
+                text: "Tier: " + this.tier.toString(),
                 fontSize: 10
             }
         ];
@@ -198,6 +204,10 @@ class EnergyClaw extends Skill {
  * @extends {Skill}
  */
 class EnergyBlast extends Skill {
+    baseDamage = 5;
+    get damage() {
+        return this.baseDamage + this.tier;
+    }
     projectileSpeed = 256;
     cost = 12;
     skillCategory = SkillCategory.Energy;
@@ -216,18 +226,31 @@ class EnergyBlast extends Skill {
             {
                 text: "Launch of spread of energy projectiles in front of you.",
                 fontSize: 10
+            },
+            {
+                text: "Cost: " + this.cost.toString() + "EP",
+                fontSize: 10
+            },
+            {
+                text: "Damage: " + this.damage.toString(),
+                fontSize: 10
+            },
+            {
+                text: "Tier: " + this.tier.toString(),
+                fontSize: 10
             }
         ];
     }
     cast(player) {
         if (player.energy >= this.cost) {
             let adj = 0;
+            // disabled as we removed perk tiers
             // If upgraded, add two more random projectiles
-            if (this.perk0 == 1) {
-                adj += 2;
-            }
+            // if(this.perk0 == 1) {
+            //     adj += 2
+            // }
             for (let i = 0; i < 5 + adj; i++) {
-                let projectile = new Projectile(player.x, player.y, player, 0, 5);
+                let projectile = new Projectile(player.x, player.y, player, 0, this.damage);
                 projectile.sprite = new Animator3D(ASSET_MANAGER.getAsset("./sprites/skill/energy_shot.png"), 32, 32, 4, 0.05, false, true);
                 projectile.collisionSize = 4;
                 projectile.onEnemyCollision = () => {
@@ -254,7 +277,7 @@ class EnergyDisk extends Skill {
     cost = 8;
     baseDamage = 8;
     get damage() {
-        return this.baseDamage;
+        return this.baseDamage + this.tier * 2;
     }
     skillCategory = SkillCategory.Energy;
     constructor() {
@@ -283,6 +306,10 @@ class EnergyDisk extends Skill {
             },
             {
                 text: "Damage: " + this.damage.toString(),
+                fontSize: 10
+            },
+            {
+                text: "Tier: " + this.tier.toString(),
                 fontSize: 10
             }
         ];

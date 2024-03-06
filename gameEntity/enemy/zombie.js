@@ -8,7 +8,7 @@ class Zombie extends Enemy {
     static lungeBuildUp = 0.5;
     static lungeTime = 0.6;
     static lungeRestTime = 1.5;
-    static slashBuildUp = 0.15;
+    static slashBuildUp = 0.2;
     static slashTime = 0.75;
     facingDirection;
     target;
@@ -63,7 +63,7 @@ class Zombie extends Enemy {
         this.x += this.velocity.x * gameEngine.clockTick;
         this.y += this.velocity.y * gameEngine.clockTick;
         const state = this.ai.lastActionNode.state;
-        if (state == State.WALKING && this.velocity.magnitude() > 10) {
+        if (state == State.WALK && this.velocity.magnitude() > 10) {
             let angleRad = Math.atan2(-this.velocity.x, this.velocity.y);
             this.facingDirection = Math.round(((360 + (180 * angleRad / Math.PI)) % 360) / 22.5) % 16;
         }
@@ -82,10 +82,10 @@ class Zombie extends Enemy {
         ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
         let animator;
         switch (this.ai.lastActionNode?.state) {
-            case State.STANDING:
+            case State.STAND:
                 animator = this.standAnim;
                 break;
-            case State.WALKING:
+            case State.WALK:
                 animator = this.runAnim;
                 break;
             case State.WIND_SLASH:
@@ -100,7 +100,7 @@ class Zombie extends Enemy {
             case State.LUNGE:
                 animator = this.lungeAnim;
                 break;
-            case State.GETTING_UP:
+            case State.GET_UP:
                 animator = this.getupAnim;
                 break;
             default:

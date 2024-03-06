@@ -1,5 +1,5 @@
 class Bat extends Enemy {
-    static moveSpeed = 30;
+    static moveSpeed = 90;
     static slashDelay = 0.15;
     static slashTime = 0.75;
     static lostDelay = 50;
@@ -11,9 +11,9 @@ class Bat extends Enemy {
     targetDirection;
     standAnim;
     runAnim;
-    attackSwingAnim;
+    shootAnim;
     shadowSprite;
-    slashBehavior;
+    shootBehavior;
     chaseBehavior;
     ai;
     constructor(x, y) {
@@ -27,51 +27,77 @@ class Bat extends Enemy {
         this.target = gameEngine.globalEntities.get("hero");
         this.standAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/bat/walk.png"), 64, 64, 9, 0.08, false, true);
         this.runAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/bat/walk.png"), 64, 64, 9, 0.08, false, true);
-        this.attackSwingAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/bat/walk.png"), 64, 64, 9, Bat.slashTime, false, false, false);
-        this.attackSwingAnim.elapsedTime = this.attackSwingAnim.totalTime; // Make the animation start in it's finished state.
+        this.shootAnim = new Animator3D(ASSET_MANAGER.getAsset("./sprites/enemy/bat/walk.png"), 64, 64, 9, Bat.slashTime, false, false, false);
         this.shadowSprite = ASSET_MANAGER.getAsset("./sprites/vfx/shadow.png");
-        this.slashBehavior = new SlashingNodes(this, Slime.slashDelay, Slime.damage);
-        this.chaseBehavior = new ChasingNodes(this, Zombie.walkDelay, Zombie.moveSpeed, Zombie.lostDelay);
-        this.slashBehavior.setExitNode(this.chaseBehavior.entryNode);
-        this.chaseBehavior.setExitNode(this.slashBehavior.entryNode);
+        const projectileSprite = new Animator3D(ASSET_MANAGER.getAsset("./sprites/skill/energy_shot.png"), 32, 32, 4, 0.05, false, true);
+        const withinRange = new DecisionNode(this.withinRangeToShoot, "within range to shoot?");
+        const wait = new ActionNode(this.waitForShoot, State.WAIT_SHOOT, "waiting to shoot");
+        const tooClose = new DecisionNode(() => { return this.targetDirection.magnitude() <= 32 * 2; }, "too close to shoot?");
+        const moveAway = new ActionNode(this.moveAwayToShoot, State.WALK, "moving away to shoot");
+        this.shootBehavior = new ShootingNodes(this, 1.5, Bat.damage, projectileSprite, 150);
+        this.chaseBehavior = new ChasingNodes(this, Bat.walkDelay, Bat.moveSpeed, Bat.lostDelay);
+        withinRange.yes = tooClose;
+        tooClose.no = wait;
+        tooClose.yes = moveAway;
+        moveAway.next = tooClose;
+        withinRange.no = this.chaseBehavior.entryNode;
+        wait.next = this.chaseBehavior.directPath;
+        this.chaseBehavior.setExitNode(this.shootBehavior.entryNode);
+        this.shootBehavior.setExitNode(withinRange);
         this.ai = new FSM(this.chaseBehavior.entryNode, this.before, this.after);
     }
     ;
     before = () => {
         this.targetDirection = new Vector2(this.target.x - this.x, this.target.y - this.y);
         this.chaseBehavior.before && this.chaseBehavior.before();
-        this.slashBehavior.before && this.slashBehavior.before();
+        this.shootBehavior.before && this.shootBehavior.before();
     };
     after = () => {
         this.checkCollision();
         this.x += this.velocity.x * gameEngine.clockTick;
         this.y += this.velocity.y * gameEngine.clockTick;
         const state = this.ai.lastActionNode.state;
-        if (state == State.WALKING && this.velocity.magnitude() > 10) {
+        if (state == State.WALK && this.velocity.magnitude() > 25) {
             let angleRad = Math.atan2(-this.velocity.x, this.velocity.y);
             this.facingDirection = Math.round(((360 + (180 * angleRad / Math.PI)) % 360) / 22.5) % 16;
         }
-        else if (state == State.WIND_LUNGE || state == State.WIND_SLASH) {
+        else if (state == State.WAIT_SHOOT || state == State.WIND_LUNGE || state == State.WIND_SLASH) {
             let angleRad = Math.atan2(-this.targetDirection.x, this.targetDirection.y);
             this.facingDirection = Math.round(((360 + (180 * angleRad / Math.PI)) % 360) / 22.5) % 16;
         }
         this.chaseBehavior.after && this.chaseBehavior.after();
-        this.slashBehavior.after && this.slashBehavior.after();
+        this.shootBehavior.after && this.shootBehavior.after();
     };
-    update = () => {
+    withinRangeToShoot = () => {
+        return this.targetDirection.magnitude() <= 32 * 5;
+    };
+    waitForShoot = () => {
+        this.velocity = new Vector2(0, 0);
+    };
+    moveAwayToShoot = () => {
+        this.velocity = this.targetDirection.normalized().scale(-Bat.moveSpeed);
+    };
+    update() {
         this.ai.update();
-    };
+    }
     draw(ctx) {
         ctx.drawImage(this.shadowSprite, 0, 0, 32, 16, this.x - gameEngine.camera.x - 16, this.y - gameEngine.camera.y - 8, 32, 16);
-        if (this.ai.lastActionNode?.name == "attacking") {
-            this.attackSwingAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 24, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
+        let animator;
+        switch (this.ai.lastActionNode?.state) {
+            case State.STAND:
+                animator = this.standAnim;
+                break;
+            case State.WALK:
+                animator = this.runAnim;
+                break;
+            case State.SHOOT:
+                animator = this.shootAnim;
+                break;
+            default:
+                animator = this.standAnim;
+                break;
         }
-        else if (this.velocity.x !== 0 || this.velocity.y !== 0) {
-            this.runAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
-        }
-        else {
-            this.standAnim.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
-        }
+        animator.drawFrame(ctx, this.x - gameEngine.camera.x - 32, this.y - gameEngine.camera.y - 40, 1, this.facingDirection);
         if (params.drawColliders) {
             ctx.lineWidth = 4;
             ctx.strokeStyle = "green";

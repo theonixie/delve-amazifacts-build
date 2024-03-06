@@ -22,13 +22,14 @@ class Hud extends HudEntity {
         ctx.textAlign = "center";
         // Draw the health bar. The width is based on how much health the player has left.
         ctx.fillStyle = "red";
-        ctx.fillRect(204, 328, (this.hero.health / this.hero.maxHealth) * 96, 16);
+        let health = Math.max(this.hero.health, 0);
+        ctx.fillRect(204, 328, (health / this.hero.maxHealth) * 96, 16);
         ctx.fillStyle = "#aa0044";
-        ctx.fillRect(204, 340, (this.hero.health / this.hero.maxHealth) * 96, 4);
+        ctx.fillRect(204, 340, (health / this.hero.maxHealth) * 96, 4);
         ctx.fillStyle = "black";
-        ctx.fillText(this.hero.health.toString() + "/" + this.hero.maxHealth.toString(), 253, 342);
+        ctx.fillText(health.toString() + "/" + this.hero.maxHealth.toString(), 253, 342);
         ctx.fillStyle = "white";
-        ctx.fillText(this.hero.health.toString() + "/" + this.hero.maxHealth.toString(), 252, 341);
+        ctx.fillText(health.toString() + "/" + this.hero.maxHealth.toString(), 252, 341);
         // Draw the energy bar. The width is based on how much health the player has left.
         ctx.fillStyle = "#2255ff";
         ctx.fillRect(396 - ((this.hero.energy / this.hero.maxEnergy) * 96), 328, (this.hero.energy / this.hero.maxEnergy) * 96, 16);

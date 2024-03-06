@@ -20,15 +20,14 @@ class ChasingNodes extends Behavior {
         this.walkDelay = walkDelay;
         this.moveSpeed = moveSpeed;
         this.lostDelay = lostDelay;
-        this.idle = new ActionNode(this.stop, State.STANDING, "idle");
-        this.walkingToTarget = new ActionNode(this.walkToTarget, State.WALKING, "walk to target");
-        this.walkingToWaypoint = new ActionNode(this.walkToWaypoint, State.WALKING, "walk to waypoint");
+        this.idle = new ActionNode(this.stop, State.STAND, "idle");
+        this.walkingToTarget = new ActionNode(this.walkToTarget, State.WALK, "walk to target");
+        this.walkingToWaypoint = new ActionNode(this.walkToWaypoint, State.WALK, "walk to waypoint");
         this.directPath = new DecisionNode(this.directPathExists, "direct path");
         this.lostPlayer = new DecisionNode(this.hasLostPlayer, "lost player");
         this.pathfind = new DecisionNode(this.usePath, "path");
         this.walkTimerDone = new DecisionNode(() => { return this.walkingTimer >= this.walkDelay; }, "walk timer done");
         this.idle.next = this.directPath;
-        this.directPath.yes = this.walkingToTarget;
         this.directPath.no = this.lostPlayer;
         this.lostPlayer.yes = this.idle;
         this.lostPlayer.no = this.pathfind;
@@ -37,10 +36,11 @@ class ChasingNodes extends Behavior {
         this.walkTimerDone.yes = this.directPath;
         this.walkTimerDone.no = this.walkingToWaypoint;
         this.pathfind.no = this.directPath;
-        this.entryNode = this.directPath;
+        this.entryNode = this.walkingToTarget;
+        this.walkingToTarget.next = this.directPath;
     }
     setExitNode = (node) => {
-        this.walkingToTarget.next = node;
+        this.directPath.yes = node;
     };
     before = () => {
         this.lostTimer += gameEngine.clockTick;
